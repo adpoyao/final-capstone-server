@@ -3,11 +3,20 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { PORT } = require('./config');
-
+const morgan = require('morgan');
 const app = express();
+const userRouter = require('./users/router')
+
+
+app.use(
+  morgan(process.env.NODE_ENV === 'production' ? 'common' : 'dev', {
+      skip: (req, res) => process.env.NODE_ENV === 'test'
+  })
+);
 
 app.use(bodyParser.json());
 
+let server = app
 function runServer(port = PORT) {
     const server = app
       .listen(port, () => {
@@ -31,8 +40,9 @@ function runServer(port = PORT) {
       });
   }
 
+  // .catch(err => console.error(err));
   if (require.main === module) {
-    runServer();
+    runServer()
   }
 
 
