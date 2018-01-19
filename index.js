@@ -3,7 +3,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
-const { PORT } = require('./config');
+const { PORT, CLIENT_ORIGIN, DATABASE_URL } = require('./config');
 const classRouter = require('./class')
 const { Class } = require('./class/models');
 const app = express();
@@ -45,7 +45,10 @@ function closeServer() {
 }
 
 if (require.main === module) {
-  runServer()
+  dbConnect().then(() => {
+    console.log('connected to DB')
+  });
+  runServer();
 }
 
 module.exports = { app, runServer, closeServer };
