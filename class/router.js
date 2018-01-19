@@ -5,9 +5,21 @@ const jsonParser = bodyParser.json();
 
 
 router.get('/', (req, res) => {
+  User.findOne({})
     res.json([{'classname': 'BIO103'}]);
   });
 
+
+  // router.get('/next', jwtAuth, (req, res) => {
+  //   User.findOne({ username: req.user.username })
+  //     .then(user => {
+  //       res.json(user.questions[user.head]);
+  //     })
+  //     .catch(err => {
+  //       console.log(err);
+  //       res.status(500).json({ message: 'Internal server error' });
+  //     });
+  // });
 
 router.post('/', jsonParser, (req, res) => {
    

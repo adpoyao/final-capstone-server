@@ -25,7 +25,7 @@ describe('Class endpoint tests', function() {
             expect(res).to.be.json;
             expect(res.body).to.be.a('array');
             expect(res.body.length).to.be.above(0);
-            const expectedKeys = ['classname'];
+            const expectedKeys = ['className'];
             res.body.forEach(function(item) {
                 expect(item).to.be.a('object');
                 expect(item).to.include.keys(expectedKeys);
