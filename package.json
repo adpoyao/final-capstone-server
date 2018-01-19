@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon server.js",
+    "test": "nyc mocha",
+    "cover": "nodemon --exec nyc --reporter=lcov --reporter=text-summary mocha test/setup.test.js */*.test.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +17,19 @@
   "bugs": {
     "url": "https://github.com/adpoyao/final-capstone-server/issues"
   },
-  "homepage": "https://github.com/adpoyao/final-capstone-server#readme"
+  "homepage": "https://github.com/adpoyao/final-capstone-server#readme",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "mongoose": "^5.0.0",
+    "morgan": "^1.9.0",
+    "uuid": "^2.0.3"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "chai-http": "^3.0.0",
+    "mocha": "^3.5.3",
+    "nodemon": "^1.14.11",
+    "nyc": "^11.4.1"
+  }
 }
