@@ -1,10 +1,11 @@
 'use strict';
 
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const { PORT, CLIENT_ORIGIN, DATABASE_URL } = require('./config');
-const classRouter = require('./class')
+const classRouter = require('./class/router')
 const { Class } = require('./class/models');
 const app = express();
 
@@ -33,13 +34,15 @@ function runServer(port = PORT) {
 }
   
 function closeServer() {
-  return new Promise((resolve, reject) => {
-    console.log('Closing server');
-    server.close(err => {
-      if (err) {
-        return reject(err);
-      }
-      resolve();
+  return mongoose.disconnect().then(() => {
+    return new Promise((resolve, reject) => {
+      console.log('Closing server');
+      server.close(err => {
+        if (err) {
+          return reject(err);
+        }
+        resolve();
+      });
     });
   });
 }
