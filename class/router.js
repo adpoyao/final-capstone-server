@@ -1,11 +1,13 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 const router = express.Router();
 const jsonParser = bodyParser.json();
 
 
 router.get('/', (req, res) => {
-    res.json([{'classname': 'BIO103'}]);
+
+    res.json([{'className': 'BIO103'}]);
   });
 
 
