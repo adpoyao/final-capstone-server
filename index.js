@@ -3,9 +3,12 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
-const { PORT } = require('./config');
+const { PORT, CLIENT_ORIGIN, DATABASE_URL } = require('./config');
 const classRouter = require('./class/router')
 const app = express();
+
+// const { dbConnect } = require('./db-mongoose');
+// const mongoose = require('mongoose');
 
 app.use(
   morgan(process.env.NODE_ENV === 'production' ? 'common' : 'dev', {
