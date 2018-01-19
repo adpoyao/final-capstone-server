@@ -7,7 +7,7 @@ const expect = chai.expect;
 
 chai.use(chaiHttp);
 
-describe('User endpoint tests', function() {
+describe('Class endpoint tests', function() {
 
     before(function() {
         return runServer();
@@ -17,15 +17,15 @@ describe('User endpoint tests', function() {
         return closeServer();
       });
 
-    it('GET request should list a user', function() {
+    it('should GET a list a classes', function() {
         return chai.request(app)
-            .get('/user')
+            .get('/class')
             .then(function(res) {
             expect(res).to.have.status(200);
             expect(res).to.be.json;
             expect(res.body).to.be.a('array');
             expect(res.body.length).to.be.above(0);
-            const expectedKeys = ['id', 'firstName', 'lastName', 'className'];
+            const expectedKeys = ['classname'];
             res.body.forEach(function(item) {
                 expect(item).to.be.a('object');
                 expect(item).to.include.keys(expectedKeys);
@@ -33,5 +33,52 @@ describe('User endpoint tests', function() {
             });
     });
 
+    it('should POST a new class', function() {
+        const newClass = {firstName: 'John', lastName: 'Doe', username: 'username', className: 'BIO103'};
+        return chai.request(app)
+            .post('/newClass')
+            .send(newClass)
+            .then(function(res) {
+            expect(res).to.have.status(201);
+            expect(res).to.be.json;
+            expect(res.body).to.be.a('object');
+            expect(res.body).to.include.keys('id', 'firstName', 'lastName', 'username', 'className');
+            expect(res.body.id).to.not.equal(null);
+            expect(res.body).to.deep.equal(Object.assign(newClass, {id: res.body.id}));
+            });
+      });
 
+    it('should PUT update a class', function() {
+        const updateClass = {
+            firstName: 'John',
+            lastName: 'Doe',
+            className: 'BIO103'
+        };
+        return chai.request(app)
+            .get('/class')
+            .then(function(res) {
+            updateClass.id = res.body[0].id;
+            return chai.request(app)
+                .put(`/newClass/${updateClass.id}`)
+                .send(updateClass)
+            })
+            .then(function(res) {
+            expect(res).to.have.status(200);
+            expect(res).to.be.json;
+            expect(res.body).to.be.a('object');
+            expect(res.body).to.deep.equal(updateClass);
+            });
+    });
+
+    it('should DELETE a class', function() {
+        return chai.request(app)
+            .get('/class')
+            .then(function(res) {
+            return chai.request(app)
+                .delete(`'/class'/${res.body[0].id}`);
+            })
+            .then(function(res) {
+            expect(res).to.have.status(204);
+            });
+    });
 });
