@@ -34,9 +34,14 @@ describe('Class endpoint tests', function() {
     });
 
     it('should POST a new class', function() {
-        const newClass = {firstName: 'John', lastName: 'Doe', username: 'username', className: 'BIO103'};
+        const newClass = {
+            firstName: 'John', 
+            lastName: 'Doe', 
+            username: 'username', 
+            className: 'BIO103'
+        };
         return chai.request(app)
-            .post('/newClass')
+            .post('/class')
             .send(newClass)
             .then(function(res) {
             expect(res).to.have.status(201);
@@ -52,14 +57,15 @@ describe('Class endpoint tests', function() {
         const updateClass = {
             firstName: 'John',
             lastName: 'Doe',
-            className: 'BIO103'
+            className: 'BIO103',
+            id: '123'
         };
         return chai.request(app)
             .get('/class')
             .then(function(res) {
-            updateClass.id = res.body[0].id;
+            updateClass.id = '123';
             return chai.request(app)
-                .put(`/newClass/${updateClass.id}`)
+                .put(`/class/${updateClass.id}`)
                 .send(updateClass)
             })
             .then(function(res) {
@@ -75,7 +81,7 @@ describe('Class endpoint tests', function() {
             .get('/class')
             .then(function(res) {
             return chai.request(app)
-                .delete(`'/class'/${res.body[0].id}`);
+                .delete(`/class/${res.body[0].id}`);
             })
             .then(function(res) {
             expect(res).to.have.status(204);

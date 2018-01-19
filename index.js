@@ -2,11 +2,9 @@
 
 const express = require('express');
 const bodyParser = require('body-parser');
-
 const morgan = require('morgan');
 const { PORT } = require('./config');
 const classRouter = require('./class/router')
-
 const app = express();
 
 app.use(
@@ -14,15 +12,6 @@ app.use(
     skip: (req, res) => process.env.NODE_ENV === 'test'
   })
 );
-
-// app.use(
-//   cors({
-//     origin: CLIENT_ORIGIN
-//   })
-// );
-
-// app.use(morgan('common'));
-// app.use(express.static('public'));
 
 app.use(bodyParser.json());
 
