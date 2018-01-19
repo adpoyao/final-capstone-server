@@ -11,13 +11,24 @@ router.get('/', (req, res) => {
 
 router.post('/', jsonParser, (req, res) => {
    
-    const item = {'id':'123', 'firstName':'John', 'lastName':'Doe', 'username':'username', 'className':'BIO103'}
+    const item = {
+    'id':'123', 
+    'firstName':'John', 
+    'lastName':'Doe', 
+    'username':'username', 
+    'className':'BIO103'}
+
     res.status(201).json(item);
 });
 
 
 router.put('/:id', jsonParser, (req, res) => {
-    const updatedItem = {'id':'123', 'firstName':'John', 'lastName':'Doe', 'className':'BIO103'}
+    const updatedItem = {
+      'id':'123', 
+      'firstName':'John', 
+      'lastName':'Doe', 
+      'className':'BIO103'
+    }
     res.status(200).json(updatedItem);
   });
 
