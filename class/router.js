@@ -14,11 +14,7 @@ router.get('/', (req, res) => {
 
 
 router.post('/', jsonParser, (req, res) => {
-<<<<<<< HEAD
-   
-=======
   
->>>>>>> adam
     const item = {
     'id':'123', 
     'firstName':'John', 
