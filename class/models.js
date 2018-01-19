@@ -4,15 +4,14 @@ mongoose.Promise = global.Promise;
 
 
 const ClassSchema = mongoose.Schema({
-    username: {
+    className: {
         type: String,
         required: true,
-        unique: true
         }
 })
 
 ClassSchema.methods.apiRepr = function () {
-    return { username: this.username };
+    return { className: this.className };
   };
 
 
