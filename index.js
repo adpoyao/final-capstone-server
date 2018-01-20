@@ -13,7 +13,7 @@ const passport = require('passport');
 // console.log(jimmy); // Stewart - the variable name is jimmy, not james
 // console.log(bobby); // De Niro - the variable name is bobby, not robert
 const { router: usersRouter } = require('./users');
-const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
+//const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
 
 mongoose.Promise = global.Promise;
 
@@ -27,14 +27,14 @@ app.use(cors({
     origin: CLIENT_ORIGIN
 }));
 
-passport.use(localStrategy);
-passport.use(jwtStrategy);
+// passport.use(localStrategy);
+// passport.use(jwtStrategy);
 
 app.use('/api/users/', usersRouter);
 // app.use('/api/auth/', authRouter);
 
 
-const jwtAuth = passport.authenticate('jwt', { session: false });
+//const jwtAuth = passport.authenticate('jwt', { session: false });
 
 app.get('/test', (req,res) => {
   res.send('Hello');
