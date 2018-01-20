@@ -56,6 +56,7 @@ describe('POST', function () {
     
     it('Should create a new class', function () {
     return chai
+    className = 'className'
         .request(app)
         .post('/class')
         .send({ className })
