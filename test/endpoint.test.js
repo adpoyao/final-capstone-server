@@ -33,58 +33,75 @@ describe('Class endpoint tests', function() {
             });
     });
 
-    it('should POST a new class', function() {
-        const newClass = {
-            firstName: 'John', 
-            lastName: 'Doe', 
-            username: 'username', 
-            className: 'BIO103'
-        };
-        return chai.request(app)
-            .post('/class')
-            .send(newClass)
-            .then(function(res) {
-            expect(res).to.have.status(201);
-            expect(res).to.be.json;
-            expect(res.body).to.be.a('object');
-            expect(res.body).to.include.keys('id', 'firstName', 'lastName', 'username', 'className');
-            expect(res.body.id).to.not.equal(null);
-            expect(res.body).to.deep.equal(Object.assign(newClass, {id: res.body.id}));
-            });
-      });
+describe('POST', function () {
+    it('Should reject post with missing className', function () {
+    return chai
+        .request(app)
+        .post('/class')
+        .then(() =>
+        expect.fail(null, null, 'Request should not succeed')
+        )
+        .catch(err => {
+        if (err instanceof chai.AssertionError) {
+            throw err;
+        }
 
-    it('should PUT update a class', function() {
-        const updateClass = {
-            firstName: 'John',
-            lastName: 'Doe',
-            className: 'BIO103',
-            id: '123'
-        };
-        return chai.request(app)
-            .get('/class')
-            .then(function(res) {
-            updateClass.id = '123';
-            return chai.request(app)
-                .put(`/class/${updateClass.id}`)
-                .send(updateClass)
-            })
-            .then(function(res) {
-            expect(res).to.have.status(200);
-            expect(res).to.be.json;
-            expect(res.body).to.be.a('object');
-            expect(res.body).to.deep.equal(updateClass);
-            });
+        const res = err.response;
+        expect(res).to.have.status(422);
+        expect(res.body.reason).to.equal('ValidationError');
+        expect(res.body.message).to.equal('Missing field');
+        expect(res.body.location).to.equal('className');
+        });
     });
+    
+    it('Should create a new class', function () {
+    return chai
+        .request(app)
+        .post('/class')
+        .send({ className })
+        .then(res => {
+        expect(res).to.have.status(201);
+        expect(res.body).to.be.an('object');
+        expect(res.body.className).to.equal(className);
+        return Class.findOne({ className });
+        })
+    });
+});
 
-    it('should DELETE a class', function() {
+
+
+it('should PUT update a class', function() {
+    const updateClass = {
+        firstName: 'John',
+        lastName: 'Doe',
+        className: 'BIO103',
+        id: '123'
+    };
+    return chai.request(app)
+        .get('/class')
+        .then(function(res) {
+        updateClass.id = '123';
         return chai.request(app)
-            .get('/class')
-            .then(function(res) {
-            return chai.request(app)
-                .delete(`/class/${res.body[0].id}`);
-            })
-            .then(function(res) {
-            expect(res).to.have.status(204);
-            });
-    });
+            .put(`/class/${updateClass.id}`)
+            .send(updateClass)
+        })
+        .then(function(res) {
+        expect(res).to.have.status(200);
+        expect(res).to.be.json;
+        expect(res.body).to.be.a('object');
+        expect(res.body).to.deep.equal(updateClass);
+        });
+});
+
+it('should DELETE a class', function() {
+    return chai.request(app)
+        .get('/class')
+        .then(function(res) {
+        return chai.request(app)
+            .delete(`/class/${res.body[0].id}`);
+        })
+        .then(function(res) {
+        expect(res).to.have.status(204);
+        });
+});
 });
