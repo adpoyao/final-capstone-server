@@ -2,7 +2,7 @@
 
 # dependencies
 /node_modules
-/nyc_output
+/.nyc_output
 
 # testing
 /coverage
