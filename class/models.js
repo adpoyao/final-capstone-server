@@ -7,11 +7,17 @@ const ClassSchema = mongoose.Schema({
     className: {
         type: String,
         required: true,
-        }
+        },
+    firstName: {
+        type: String,
+    }, 
+    _id: {
+        type: Number
+    }
 })
 
 ClassSchema.methods.apiRepr = function () {
-    return { className: this.className };
+    return { className: this.className, firstName: this.firstName };
   };
 
 

@@ -17,6 +17,8 @@ describe('Class endpoint tests', function() {
         return closeServer();
       });
 
+
+describe('POST', function () {
     it('should GET a list a classes', function() {
         return chai.request(app)
             .get('/class')
@@ -32,6 +34,8 @@ describe('Class endpoint tests', function() {
             });
             });
     });
+});
+
 
 describe('POST', function () {
     it('Should reject post with missing className', function () {
@@ -63,6 +67,7 @@ describe('POST', function () {
         .then(res => {
         expect(res).to.have.status(201);
         expect(res.body).to.be.an('object');
+        // expect(res.body).to.include.keys('className');
         expect(res.body.className).to.equal(className);
         return Class.findOne({ className });
         })
@@ -70,39 +75,43 @@ describe('POST', function () {
 });
 
 
+// describe('PUT', function () {
+//     it('should update a class', function() {
+//         const updateClass = {
+//             _id: 123,
+//             firstName: 'John',
+//             className: 'BIO104',
+            
+//         };
+//         return chai.request(app)
+//             .get('/class')
+//             .then(function(res) {
+//             updateClass.id = res.body[0]._id;
+//             return chai.request(app)
+//                 .put(`/class/${updateClass._id}`)
+//                 .send(updateClass)
+//             })
+//             .then(function(res) {
+//             expect(res).to.have.status(200);
+//             expect(res).to.be.json;
+//             expect(res.body).to.be.a('object');
+//             expect(res.body).to.deep.equal(updateClass);
+//             });
+//     });
+// });
 
-it('should PUT update a class', function() {
-    const updateClass = {
-        firstName: 'John',
-        lastName: 'Doe',
-        className: 'BIO103',
-        id: '123'
-    };
-    return chai.request(app)
-        .get('/class')
-        .then(function(res) {
-        updateClass.id = '123';
-        return chai.request(app)
-            .put(`/class/${updateClass.id}`)
-            .send(updateClass)
-        })
-        .then(function(res) {
-        expect(res).to.have.status(200);
-        expect(res).to.be.json;
-        expect(res.body).to.be.a('object');
-        expect(res.body).to.deep.equal(updateClass);
-        });
-});
 
-it('should DELETE a class', function() {
-    return chai.request(app)
-        .get('/class')
-        .then(function(res) {
+describe('DELETE', function () {
+    it('should DELETE a class', function() {
         return chai.request(app)
-            .delete(`/class/${res.body[0].id}`);
-        })
-        .then(function(res) {
-        expect(res).to.have.status(204);
-        });
+            .get('/class')
+            .then(function(res) {
+            return chai.request(app)
+                .delete(`/class/${res.body[0].id}`);
+            })
+            .then(function(res) {
+            expect(res).to.have.status(204);
+            });
+    });
 });
 });

@@ -15,7 +15,7 @@ router.get('/', (req, res) => {
 
 router.post('/', jsonParser, (req, res) => {
   
-  const requiredFields = ['className'];
+  const requiredFields = ['className', 'firstName', '_id '];
   const missingField = requiredFields.find(field => !(field in req.body));
 
   if (missingField) {
@@ -27,7 +27,7 @@ router.post('/', jsonParser, (req, res) => {
     });
   }
 
-  const stringFields = ['className', 'password'];
+  const stringFields = ['className', 'firstName'];
   const nonStringField = stringFields.find(
     field => field in req.body && typeof req.body[field] !== 'string'
   );
@@ -56,7 +56,8 @@ router.post('/', jsonParser, (req, res) => {
   }
 
   const sizedFields = {
-    className: { min: 1 }
+    className: { min: 1 }, 
+    // firstName: {min: 1}
   };
   const tooSmallField = Object.keys(sizedFields).find(
     field =>
@@ -80,9 +81,13 @@ router.post('/', jsonParser, (req, res) => {
     });
   }
 
-  let { className } = req.body;
+  let { className, firstName, id } = req.body;
 
-  return Class.find({ className })
+  return Class.find({ 
+    className: req.class.className,
+    firstName: req.class.firstName,
+    id: request.class.id
+   })
     .count()
     .then(count => {
       if (count > 0) {
@@ -96,7 +101,7 @@ router.post('/', jsonParser, (req, res) => {
       // return User.hashPassword(password);
     })
     .then(() => {
-      return Class.create({ className });
+      return Class.create({ className, firstName, id });
     })
     // .then(user => Question.find().then(questions => ({user, questions})))
     //     .then(({user, questions}) => {
@@ -122,36 +127,44 @@ router.post('/', jsonParser, (req, res) => {
       }
       res.status(500).json({ code: 500, message: 'Internal server error' });
     });
-  });
+});
 
 
 
-  router.put('/class/:id', jsonParser, (req, res) => {
-    const requiredFields = ['className'];
-    for (let i=0; i<requiredFields.length; i++) {
-      const field = requiredFields[i];
-      if (!(field in req.body)) {
-        const message = `Missing \`${field}\` in request body`
-        console.error(message);
-        return res.status(400).send(message);
-      }
-    }
-    if (req.params.id !== req.body.id) {
-      const message = `Request path id (${req.params.id}) and request body id (${req.body.id}) must match`;
-      console.error(message);
-      return res.status(400).send(message);
-    }
-    console.log(`Updating class \`${req.params.id}\``);
-    Class.update({
-      id: req.params.id,
-      className: req.body.className
-    });
+// router.put('/:id', jsonParser, (req, res) => {
+//   const requiredFields = [ '_id', 'className',];
+//   for (let i=0; i<requiredFields.length; i++) {
+//     const field = requiredFields[i];
+//     // console.log('field', field)
+//     // console.log('req.body._id', req.body._id)
+    
+//     if (!(field in req.body)) {
+//       const message = `Missing \`${field}\` in request body`
+//       console.error(message);
+//       return res.status(400).send(message);
+//     }
+//   }
+//   if (req.params.id !== req.body.id) {
+//     console.log('req.params.id', req.params.id)
+//     console.log('req.body.id', req.body._id)
+//     const message = `Request path id (${req.params.id}) and request body id (${req.body._id}) must match`;
+//     console.error(message);
+//     return res.status(400).send(message);
+//   }
+//   console.log(`Updating class \`${req.params.id}\``);
+//   Class.update({
+//     id: req.params.id,
+//     className: req.body.className
+//   });
+//   res.status(204).end();
+// });
+
+
+router.delete('/:id', jsonParser, (req, res) => {
+  Class
+    .findByIdAndRemove(req.params._id);
+    console.log(`Deleted shopping list item \`${req.params.id}\``);
     res.status(204).end();
-  });
-
-
-router.delete('/:id', (req, res) => {
-    res.status(204).end()
   });
 
   
