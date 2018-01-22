@@ -24,8 +24,14 @@ const ClassesSchema = mongoose.Schema({
     // teacherID: {
     //     type: Schema.Types.ObjectId,
     //     ref: "User"
-    // }
+    // },
+//     studentID: {
+//             type: Schema.Types.ObjectId,
+//             ref: "User"
+//         }
 })
+
+ClassesSchema.path('')
 
 
 ClassesSchema.methods.apiRepr = function () {
