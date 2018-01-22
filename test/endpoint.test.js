@@ -38,13 +38,26 @@ describe('GET', function () {
             });
     });
     it('should get a single student class', function() {
-    //   let student = new Classes ({
-    //       className: 'BIO101',
-    // })
+
+
+        // return chai.request(app)
+        // // first have to get so we have an idea of object to update
+        // .get('/shopping-list')
+        // .then(function(res) {
+        //   updateData.id = res.body[0].id;
+        //   // this will return a promise whose value will be the response
+        //   // object, which we can inspect in the next `then` back. Note
+        //   // that we could have used a nested callback here instead of
+        //   // returning a promise and chaining with `then`, but we find
+        //   // this approach cleaner and easier to read and reason about.
+        //   return chai.request(app)
+        //     .put(`/shopping-list/${updateData.id}`)
+        //     .send(updateData);
+        // })
+
         return chai
             .request(app)
             .get('/classes/' )
-            // .send(student)
             .then(function(res) {
                 console.log('res.body single get', res.body)
             expect(res).to.have.status(200);
