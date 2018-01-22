@@ -1,3 +1,5 @@
+import { Schema } from 'mongoose';
+
 const mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
@@ -31,7 +33,10 @@ const ClassesSchema = mongoose.Schema({
 //         }
 })
 
-ClassesSchema.path('')
+// const UserSchema = mongoose.Schema({
+//     _id: Schema.Types.ObjectId,
+//     firstName: String,
+// }) git
 
 
 ClassesSchema.methods.apiRepr = function () {
