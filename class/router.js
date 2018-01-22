@@ -20,13 +20,8 @@ router.post('/', jsonParser, (req, res) => {
     'firstName':'John', 
     'lastName':'Doe', 
     'username':'username', 
-<<<<<<< HEAD
-    'className':'BIO103'}
-
-=======
     'className':'BIO103'
   }
->>>>>>> adam
     res.status(201).json(item);
 });
 
