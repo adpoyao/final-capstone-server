@@ -42,18 +42,20 @@ describe('/api/user', function () {
           .then(() =>
             expect.fail(null, null, 'Request should not succeed')
           )
+          .then(() => done())
           .catch(err => {
             if (err instanceof chai.AssertionError) {
               throw err;
             }
 
             const res = err.response;
-            expect(res).to.have.status(422);
+            expect(res).to.have.status(422)
             expect(res.body.reason).to.equal('ValidationError');
             expect(res.body.message).to.equal('Missing field');
             expect(res.body.location).to.equal('username');
           });
       });
+      
       it('Should reject users with missing password', function () {
         return chai
           .request(app)
