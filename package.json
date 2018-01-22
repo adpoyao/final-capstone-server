@@ -1,36 +1,33 @@
 {
-  "name": "final-capstone-server",
+  "name": "node-jwt-auth",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon server.js",
-    "test": "nyc mocha",
-    "cover": "nodemon --exec nyc --reporter=lcov --reporter=text-summary mocha test/setup.test.js */*.test.js"
+    "start": "node server.js",
+    "test": "nyc mocha"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/adpoyao/final-capstone-server.git"
-  },
+  "keywords": [],
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/adpoyao/final-capstone-server/issues"
-  },
-  "homepage": "https://github.com/adpoyao/final-capstone-server#readme",
   "dependencies": {
-    "body-parser": "^1.18.2",
+    "bcryptjs": "^2.4.0",
+    "body-parser": "^1.15.2",
+    "cors": "^2.8.4",
     "dotenv": "^4.0.0",
-    "express": "^4.16.2",
-    "mongoose": "^5.0.0",
-    "morgan": "^1.9.0",
-    "uuid": "^2.0.3"
+    "express": "^4.14.0",
+    "jsonwebtoken": "^7.4.1",
+    "mongoose": "^4.7.4",
+    "morgan": "^1.7.0",
+    "nyc": "^11.4.1",
+    "passport": "^0.3.2",
+    "passport-jwt": "^2.2.1",
+    "passport-local": "^1.0.0"
   },
   "devDependencies": {
-    "chai": "^4.1.2",
+    "chai": "^4.0.1",
     "chai-http": "^3.0.0",
-    "mocha": "^3.5.3",
-    "nodemon": "^1.14.11",
-    "nyc": "^11.4.1"
+    "faker": "^3.1.0",
+    "mocha": "^3.4.2"
   }
 }
