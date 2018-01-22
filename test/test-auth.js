@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const expect = chai.expect;
 const { app, runServer, closeServer } = require('../index');
 const { User } = require('../users');
-const { JWT_SECRET } = require('../config');
+const { JWT_SECRET, JWT_EXPIRY } = require('../config');
 
 //This will help us to make HTTP requests in ou tests
 chai.use(chaiHttp);
@@ -59,7 +59,7 @@ describe('Auth endpoints', function() {
                     throw err;
                 }
                 const res = err.response;
-                expect(res).to.have.status(404);
+                expect(res).to.have.status(400);
             })
         })
         //This test when user provide wrong username
@@ -76,7 +76,7 @@ describe('Auth endpoints', function() {
                         throw err;
                     }
                     const res = err.response;
-                    expect(res).to.have.status(404);
+                    expect(res).to.have.status(401);
                 })
         })
         //This test when user provide wrong password
@@ -94,7 +94,7 @@ describe('Auth endpoints', function() {
                 }
       
                 const res = err.response;
-                expect(res).to.have.status(404);
+                expect(res).to.have.status(401);
               });
           });
 
@@ -130,7 +130,7 @@ describe('Auth endpoints', function() {
                 }
       
                 const res = err.response;
-                expect(res).to.have.status(404);
+                expect(res).to.have.status(401);
               });
           });
           it('Should reject requests with an invalid token', function () {
@@ -160,7 +160,7 @@ describe('Auth endpoints', function() {
                 }
       
                 const res = err.response;
-                expect(res).to.have.status(404);
+                expect(res).to.have.status(401);
               });
           });
           it('Should reject requests with an expired token', function () {
@@ -193,7 +193,7 @@ describe('Auth endpoints', function() {
                 }
       
                 const res = err.response;
-                expect(res).to.have.status(404);
+                expect(res).to.have.status(401);
               });
           });
           it('Should return a valid auth token with a newer expiry date', function () {
@@ -236,3 +236,4 @@ describe('Auth endpoints', function() {
           });
     })
 })
+
