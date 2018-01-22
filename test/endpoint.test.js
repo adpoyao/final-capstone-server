@@ -8,6 +8,9 @@ const { Classes } = require('../classes/models');
 
 chai.use(chaiHttp);
 
+
+
+
 describe('Classes endpoint tests', function() {
 
     before(function() {
@@ -39,27 +42,12 @@ describe('GET', function () {
     });
     it('should get a single student class', function() {
 
-
-        // return chai.request(app)
-        // // first have to get so we have an idea of object to update
-        // .get('/shopping-list')
-        // .then(function(res) {
-        //   updateData.id = res.body[0].id;
-        //   // this will return a promise whose value will be the response
-        //   // object, which we can inspect in the next `then` back. Note
-        //   // that we could have used a nested callback here instead of
-        //   // returning a promise and chaining with `then`, but we find
-        //   // this approach cleaner and easier to read and reason about.
-        //   return chai.request(app)
-        //     .put(`/shopping-list/${updateData.id}`)
-        //     .send(updateData);
-        // })
-
         return chai
+        const studentID = 123
             .request(app)
-            .get('/classes/' )
-            .then(function(res) {
-                console.log('res.body single get', res.body)
+            .get('/classes/' + studentID )
+            // .then(function(res) {
+            //     console.log('res.body single get', res.body)
             expect(res).to.have.status(200);
             expect(res).to.be.json;
             expect(res.body).to.be.a('array');
@@ -71,7 +59,7 @@ describe('GET', function () {
             });
             });
     });
-});
+
 
 
 describe('POST', function () {
@@ -121,7 +109,8 @@ describe('PUT', function () {
             
         };
         return chai.request(app)
-            .get('/classes/:studentID')
+        const studentID = 123
+            .get('/classes/' + studentID)
             .then(function(res) {
             updateClass.id = res.body[0].id;
             // console.log('updateClass.id', updateClass.id)
@@ -143,7 +132,8 @@ describe('PUT', function () {
 describe('DELETE', function () {
     it('should DELETE a class', function() {
         return chai.request(app)
-            .get('/classes/:studentID')
+        const studentID = 123
+            .get('/classes/' + studentID)
             .then(function(res) {
             return chai.request(app)
                 .delete(`/classes/${res.body[0].id}`);
