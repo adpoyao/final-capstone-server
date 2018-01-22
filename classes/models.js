@@ -34,9 +34,16 @@ const ClassesSchema = mongoose.Schema({
 })
 
 // const UserSchema = mongoose.Schema({
-//     _id: Schema.Types.ObjectId,
 //     firstName: String,
-// }) git
+//      addedClasses: [{
+//     type: Schema.Types.ObjectId,
+//     ref: 'Classes'
+//  }],
+    // enrolledClasses: [{
+    //     type: Schema.Types.ObjectId,
+    //     ref: 'Classes'
+    // }]
+// }) 
 
 
 ClassesSchema.methods.apiRepr = function () {
