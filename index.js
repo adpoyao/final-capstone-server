@@ -8,21 +8,23 @@ const { PORT, CLIENT_ORIGIN, DATABASE_URL } = require('./config');
 const classRouter = require('./class/router')
 const { Class } = require('./class/models');
 const { router: usersRouter } = require('./users');
+const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
+const passport = require('passport');
 const app = express();
 
 const { dbConnect } = require('./db-mongoose');
 const mongoose = require('mongoose');
 
-app.use(
-  morgan(process.env.NODE_ENV === 'production' ? 'common' : 'dev', {
-    skip: (req, res) => process.env.NODE_ENV === 'test'
-  })
-);
+app.use(morgan('common'));
+
+passport.use(localStrategy);
+passport.use(jwtStrategy);
 
 app.use(bodyParser.json());
-
+const jwtAuth = passport.authenticate('jwt', { session: false });
 app.use('/class', classRouter);
 app.use('/api/users/', usersRouter);
+app.use('/api/auth/', authRouter);
 
 let server
 function runServer() {
@@ -44,7 +46,6 @@ function runServer() {
     });
   });
 }
-  
 function closeServer() {
   return mongoose.disconnect().then(() => {
     return new Promise((resolve, reject) => {
