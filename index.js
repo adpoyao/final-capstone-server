@@ -7,6 +7,7 @@ const morgan = require('morgan');
 const { PORT, CLIENT_ORIGIN, DATABASE_URL } = require('./config');
 const classRouter = require('./class/router')
 const { Class } = require('./class/models');
+const { router: usersRouter } = require('./users');
 const app = express();
 
 const { dbConnect } = require('./db-mongoose');
@@ -21,15 +22,26 @@ app.use(
 app.use(bodyParser.json());
 
 app.use('/class', classRouter);
+app.use('/api/users/', usersRouter);
 
 let server
-function runServer(port = PORT) {
-  server = app.listen(port, () => {
-    console.info(`App listening on port ${server.address().port}`);
-  })
-  .on('error', err => {
-    console.error('Express failed to start');
-    console.error(err);
+function runServer() {
+  return new Promise((resolve, reject) => {
+    mongoose.connect(DATABASE_URL, { useMongoClient: true }, err => {
+      console.log(DATABASE_URL);
+      if (err) {
+        return reject(err);
+      }
+      server = app
+        .listen(PORT, () => {
+          console.log(`Your app is listening on port ${PORT}`);
+          resolve();
+        })
+        .on('error', err => {
+          mongoose.disconnect();
+          reject(err);
+        });
+    });
   });
 }
   
