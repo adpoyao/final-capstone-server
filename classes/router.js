@@ -181,12 +181,13 @@ router.put('/:id', jsonParser, (req, res) => {
 });
 
 
-router.delete('/:id', jsonParser, (req, res) => {
-  console.log(req.body, 'req.body')/
+router.delete('/:id', (req, res) => {
+  console.log(req.params, 'req.params')/
   Classes
-    .findByIdAndRemove(req.params.id);
-    console.log(`Deleted class \`${req.params.id}\``);
-    res.status(204).end();
+    .findByIdAndRemove(req.params.id)
+    .then(() => res.status(204).end())
+    // console.log(`Deleted class \`${req.params.id}\``)
+    .catch(err => res.status(500).json({message: 'Internal server error'}));
   });
 
   
