@@ -5,8 +5,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const { PORT, CLIENT_ORIGIN, DATABASE_URL } = require('./config');
-const classRouter = require('./class/router')
-const { Class } = require('./class/models');
+const classesRouter = require('./classes/router')
+const { Classes } = require('./classes/models');
 const app = express();
 
 const { dbConnect } = require('./db-mongoose');
@@ -20,7 +20,7 @@ app.use(
 
 app.use(bodyParser.json());
 
-app.use('/class', classRouter);
+app.use('/classes', classesRouter);
 
 let server
 function runServer(port = PORT) {

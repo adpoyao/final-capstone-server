@@ -7,7 +7,7 @@ const expect = chai.expect;
 
 chai.use(chaiHttp);
 
-describe('Class endpoint tests', function() {
+describe('Classes endpoint tests', function() {
 
     before(function() {
         return runServer();
@@ -18,11 +18,27 @@ describe('Class endpoint tests', function() {
       });
 
 
-describe('POST', function () {
-    it('should GET a list a classes', function() {
+describe('GET', function () {
+    it('should get a list a classes', function() {
         return chai.request(app)
-            .get('/class')
+            .get('/classes')
             .then(function(res) {
+            expect(res).to.have.status(200);
+            expect(res).to.be.json;
+            expect(res.body).to.be.a('array');
+            expect(res.body.length).to.be.above(0);
+            const expectedKeys = ['className'];
+            res.body.forEach(function(item) {
+                expect(item).to.be.a('object');
+                expect(item).to.include.keys(expectedKeys);
+            });
+            });
+    });
+    it('should get a single student class', function() {
+        return chai.request(app)
+            .get('/classes/studentID')
+            .then(function(res) {
+                console.log('res.body', res.body)
             expect(res).to.have.status(200);
             expect(res).to.be.json;
             expect(res.body).to.be.a('array');
@@ -41,7 +57,7 @@ describe('POST', function () {
     it('Should reject post with missing className', function () {
     return chai
         .request(app)
-        .post('/class')
+        .post('/classes')
         .then(() =>
         expect.fail(null, null, 'Request should not succeed')
         )
@@ -62,52 +78,54 @@ describe('POST', function () {
     return chai
     className = 'className'
         .request(app)
-        .post('/class')
+        .post('/classes')
         .send({ className })
         .then(res => {
         expect(res).to.have.status(201);
         expect(res.body).to.be.an('object');
         // expect(res.body).to.include.keys('className');
         expect(res.body.className).to.equal(className);
-        return Class.findOne({ className });
+        return Classes.findOne({ className });
         })
     });
 });
 
 
-// describe('PUT', function () {
-//     it('should update a class', function() {
-//         const updateClass = {
-//             _id: 123,
-//             firstName: 'John',
-//             className: 'BIO104',
+describe('PUT', function () {
+    it('should update a class', function() {
+        const updateClass = {
+            id: '123',
+            firstName: 'John',
+            className: 'BIO104',
             
-//         };
-//         return chai.request(app)
-//             .get('/class')
-//             .then(function(res) {
-//             updateClass.id = res.body[0]._id;
-//             return chai.request(app)
-//                 .put(`/class/${updateClass._id}`)
-//                 .send(updateClass)
-//             })
-//             .then(function(res) {
-//             expect(res).to.have.status(200);
-//             expect(res).to.be.json;
-//             expect(res.body).to.be.a('object');
-//             expect(res.body).to.deep.equal(updateClass);
-//             });
-//     });
-// });
+        };
+        return chai.request(app)
+            .get('/classes')
+            .then(function(res) {
+            updateClass.id = res.body[0].id;
+            // console.log('updateClass.id', updateClass.id)
+            return chai.request(app)
+                .put(`/classes/${updateClass.id}`)
+                .send(updateClass)
+            })
+            .then(function(res) {
+            expect(res).to.have.status(204);
+            // expect(res).to.be.json;
+            // console.log(res.body, 'res.body')
+            expect(res.body).to.be.a('object');
+            expect(res.body).to.deep.equal(updateClass);
+            });
+    });
+});
 
 
 describe('DELETE', function () {
     it('should DELETE a class', function() {
         return chai.request(app)
-            .get('/class')
+            .get('/classes')
             .then(function(res) {
             return chai.request(app)
-                .delete(`/class/${res.body[0].id}`);
+                .delete(`/classes/${res.body[0].id}`);
             })
             .then(function(res) {
             expect(res).to.have.status(204);

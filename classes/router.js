@@ -1,22 +1,41 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const { Class } = require('./models');
+const { Classes } = require('./models');
 const router = express.Router();
 const jsonParser = bodyParser.json();
 
 
 router.get('/', (req, res) => {
-  return Class.find()
+  return Classes.find()
     .then(data => res.json(data.map(data => data.apiRepr())))
     .catch(err => res.status(500).json({ message: 'Internal server error' }));
   });
 
+router.get('/:studentID', (req, res) => {
+ Classes.findById(req.params.studentID)
+  .then(data => {
+    res.json(data.apiRepr())
+  })
+  .catch(err => {
+    console.log(err, 'err router.js')
+    res.status(500).json({ message: 'Internal server error' })
+  });
+})
+
+// router.get('/:teacherID', (req, res) => {
+//  Classes.findById(req.params.id)
+//   .then(data => res.json(data.apiRepr()))
+//   .catch(err => res.status(500).json({ message: 'Internal server error' }));
+  
+// })
+
 
 router.post('/', jsonParser, (req, res) => {
   
-  const requiredFields = ['className', 'firstName', '_id '];
+  const requiredFields = ['className', 'firstName'];
   const missingField = requiredFields.find(field => !(field in req.body));
+  console.log('req.body', req.body)
 
   if (missingField) {
     return res.status(422).json({
@@ -82,11 +101,11 @@ router.post('/', jsonParser, (req, res) => {
   }
 
   let { className, firstName, id } = req.body;
-
-  return Class.find({ 
-    className: req.class.className,
-    firstName: req.class.firstName,
-    id: request.class.id
+  console.log('req.body line 86', req.body)
+  return Classes.find({ 
+    className: req.body.className,
+    firstName: req.body.firstName,
+    // id: req.body.id
    })
     .count()
     .then(count => {
@@ -101,7 +120,7 @@ router.post('/', jsonParser, (req, res) => {
       // return User.hashPassword(password);
     })
     .then(() => {
-      return Class.create({ className, firstName, id });
+      return Classes.create({ className, firstName });
     })
     // .then(user => Question.find().then(questions => ({user, questions})))
     //     .then(({user, questions}) => {
@@ -109,7 +128,7 @@ router.post('/', jsonParser, (req, res) => {
     //   // storing q's in empty user.questions []
     //   user.questions = questions.map((question, index) => {
     //     return {
-    //       _id: question._id,
+    //       id: question.id,
     //       question: question.question,
     //       answer: question.answer,
     //       mValue: 1,
@@ -119,9 +138,11 @@ router.post('/', jsonParser, (req, res) => {
     //   return user.save()
     // })
     .then(user => {
+      // console.log('user', user)
       return res.status(201).json(user.apiRepr())
     })
     .catch(err => {
+      console.log(err ,'err')
       if (err.reason === 'ValidationError') {
         return res.status(err.code).json(err);
       }
@@ -130,40 +151,41 @@ router.post('/', jsonParser, (req, res) => {
 });
 
 
-
-// router.put('/:id', jsonParser, (req, res) => {
-//   const requiredFields = [ '_id', 'className',];
-//   for (let i=0; i<requiredFields.length; i++) {
-//     const field = requiredFields[i];
-//     // console.log('field', field)
-//     // console.log('req.body._id', req.body._id)
+router.put('/:id', jsonParser, (req, res) => {
+  const requiredFields = [ 'id', 'className',];
+  for (let i=0; i<requiredFields.length; i++) {
+    const field = requiredFields[i];
+    // console.log('req.body', req.body),
+    // console.log('req.params', req.params)
     
-//     if (!(field in req.body)) {
-//       const message = `Missing \`${field}\` in request body`
-//       console.error(message);
-//       return res.status(400).send(message);
-//     }
-//   }
-//   if (req.params.id !== req.body.id) {
-//     console.log('req.params.id', req.params.id)
-//     console.log('req.body.id', req.body._id)
-//     const message = `Request path id (${req.params.id}) and request body id (${req.body._id}) must match`;
-//     console.error(message);
-//     return res.status(400).send(message);
-//   }
-//   console.log(`Updating class \`${req.params.id}\``);
-//   Class.update({
-//     id: req.params.id,
-//     className: req.body.className
-//   });
-//   res.status(204).end();
-// });
+    if (!(field in req.body)) {
+      const message = `Missing \`${field}\` in request body`
+      console.error(message);
+      return res.status(400).send(message);
+    }
+  }
+    if (req.params.id !== req.body.id) {
+      console.log('req.params.id', req.params.id)
+      console.log('req.body.id', req.body.id)
+      const message = `Request path id (${req.params.id}) and request body id (${req.body.id}) must match`;
+      console.error(message);
+      return res.status(400).send(message);
+    }
+    console.log(`Updating class \`${req.params.id}\``);
+    Classes
+    .findByIdAndUpdate(req.params.id, {
+      className: req.body.className
+    })
+    .then(data => res.status(204).end())
+    .catch(err => res.status(500).json({message: 'Internal Server error'}))
+});
 
 
 router.delete('/:id', jsonParser, (req, res) => {
-  Class
-    .findByIdAndRemove(req.params._id);
-    console.log(`Deleted shopping list item \`${req.params.id}\``);
+  console.log(req.body, 'req.body')/
+  Classes
+    .findByIdAndRemove(req.params.id);
+    console.log(`Deleted class \`${req.params.id}\``);
     res.status(204).end();
   });
 
