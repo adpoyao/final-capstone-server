@@ -9,13 +9,30 @@ const ClassesSchema = mongoose.Schema({
         type: String,
         required: true,
         },
-    firstName: {
-        type: String,
-    }, 
+    // contactEmail: {
+    //     type: String,
+    //     // required: true,
+    // },
+    // contactPhone: {
+    //     type: Number,
+    //     // required: true,
+    // },
+    // archived:  {
+    //     type: Boolean,
+    //     default: false,
+    // },
+    // teacherID: {
+    //     type: Schema.Types.ObjectId,
+    //     ref: "User"
+    // }
 })
 
+
 ClassesSchema.methods.apiRepr = function () {
-    return { _id: this.id, className: this.className, firstName: this.firstName  };
+    return { 
+        _id: this.id, 
+        className: this.className, 
+      };
   };
 
 

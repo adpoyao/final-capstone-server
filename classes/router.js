@@ -10,7 +10,8 @@ router.get('/', (req, res) => {
   return Classes.find()
     .then(data => res.json(data.map(data => data.apiRepr())))
     .catch(err => res.status(500).json({ message: 'Internal server error' }));
-  });
+});
+
 
 router.get('/:studentID', (req, res) => {
  Classes.findById(req.params.studentID)
@@ -18,7 +19,6 @@ router.get('/:studentID', (req, res) => {
     res.json(data.apiRepr())
   })
   .catch(err => {
-    console.log(err, 'err router.js')
     res.status(500).json({ message: 'Internal server error' })
   });
 })
@@ -33,9 +33,9 @@ router.get('/:studentID', (req, res) => {
 
 router.post('/', jsonParser, (req, res) => {
   
-  const requiredFields = ['className', 'firstName'];
+  const requiredFields = ['className'];
   const missingField = requiredFields.find(field => !(field in req.body));
-  console.log('req.body', req.body)
+  // console.log('req.body', req.body)
 
   if (missingField) {
     return res.status(422).json({
@@ -46,7 +46,7 @@ router.post('/', jsonParser, (req, res) => {
     });
   }
 
-  const stringFields = ['className', 'firstName'];
+  const stringFields = ['className'];
   const nonStringField = stringFields.find(
     field => field in req.body && typeof req.body[field] !== 'string'
   );
@@ -76,7 +76,7 @@ router.post('/', jsonParser, (req, res) => {
 
   const sizedFields = {
     className: { min: 1 }, 
-    // firstName: {min: 1}
+
   };
   const tooSmallField = Object.keys(sizedFields).find(
     field =>
@@ -100,12 +100,9 @@ router.post('/', jsonParser, (req, res) => {
     });
   }
 
-  let { className, firstName, id } = req.body;
-  console.log('req.body line 86', req.body)
+  let { className, id } = req.body;
   return Classes.find({ 
     className: req.body.className,
-    firstName: req.body.firstName,
-    // id: req.body.id
    })
     .count()
     .then(count => {
@@ -117,28 +114,11 @@ router.post('/', jsonParser, (req, res) => {
           location: 'className'
         });
       }
-      // return User.hashPassword(password);
     })
     .then(() => {
-      return Classes.create({ className, firstName });
+      return Classes.create({ className });
     })
-    // .then(user => Question.find().then(questions => ({user, questions})))
-    //     .then(({user, questions}) => {
-    //         console.log(user, questions);
-    //   // storing q's in empty user.questions []
-    //   user.questions = questions.map((question, index) => {
-    //     return {
-    //       id: question.id,
-    //       question: question.question,
-    //       answer: question.answer,
-    //       mValue: 1,
-    //       next: index === questions.length - 1 ? null: index + 1
-    //     }
-    //   })
-    //   return user.save()
-    // })
     .then(user => {
-      // console.log('user', user)
       return res.status(201).json(user.apiRepr())
     })
     .catch(err => {
@@ -151,12 +131,10 @@ router.post('/', jsonParser, (req, res) => {
 });
 
 
-router.put('/:id', jsonParser, (req, res) => {
+router.put('/:studentID', jsonParser, (req, res) => {
   const requiredFields = [ 'id', 'className',];
   for (let i=0; i<requiredFields.length; i++) {
     const field = requiredFields[i];
-    // console.log('req.body', req.body),
-    // console.log('req.params', req.params)
     
     if (!(field in req.body)) {
       const message = `Missing \`${field}\` in request body`
@@ -164,16 +142,14 @@ router.put('/:id', jsonParser, (req, res) => {
       return res.status(400).send(message);
     }
   }
-    if (req.params.id !== req.body.id) {
-      console.log('req.params.id', req.params.id)
-      console.log('req.body.id', req.body.id)
-      const message = `Request path id (${req.params.id}) and request body id (${req.body.id}) must match`;
+    if (req.params.studentID !== req.body.id) {
+      const message = `Request path id (${req.params.studentID}) and request body id (${req.body.id}) must match`;
       console.error(message);
       return res.status(400).send(message);
     }
-    console.log(`Updating class \`${req.params.id}\``);
+    console.log(`Updating class \`${req.params.studentID}\``);
     Classes
-    .findByIdAndUpdate(req.params.id, {
+    .findByIdAndUpdate(req.params.studentID, {
       className: req.body.className
     })
     .then(data => res.status(204).end())
@@ -181,14 +157,12 @@ router.put('/:id', jsonParser, (req, res) => {
 });
 
 
-router.delete('/:id', (req, res) => {
-  console.log(req.params, 'req.params')/
+router.delete('/:studentID', (req, res) => {
   Classes
-    .findByIdAndRemove(req.params.id)
+    .findByIdAndRemove(req.params.studentID)
     .then(() => res.status(204).end())
-    // console.log(`Deleted class \`${req.params.id}\``)
     .catch(err => res.status(500).json({message: 'Internal server error'}));
-  });
+});
 
   
 module.exports = router;
