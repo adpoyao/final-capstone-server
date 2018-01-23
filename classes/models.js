@@ -1,38 +1,32 @@
-// import { Schema } from 'mongoose';
 
 const mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
 
 
-const ClassesSchema = mongoose.Schema({
+const ClassSchema = mongoose.Schema({
     
-    className: {
-        type: String,
-        required: true,
-        },
-    teacherID: {
-        type: Number,
-        required: true,
-    },
-    teacherName: {
-        type: String,
-        required: true,
-    },
-    students: {
-        type: Array,
-    }
+    className: {type: String, required: true},
+    teacherID: {type: Number, required: true},
+    teacherName: {type: String, required: true},
+    students: {type: Array}
+
 })
 
 
-ClassesSchema.methods.apiRepr = function () {
+ClassSchema.methods.apiRepr = function () {
     return { 
-        _id: this.id, 
+
+        id: this._id,
+        teacherID: this.teacherID, 
         className: this.className, 
+        teacherName: this.teacherName,
+        students: this.students,
+
       };
   };
 
 
-const Classes = mongoose.models.Classes || mongoose.model('Classes', ClassesSchema);
+const Class = mongoose.models.Class || mongoose.model('Class', ClassSchema);
 
-module.exports = { Classes };
+module.exports = { Class };

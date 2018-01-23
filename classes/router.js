@@ -1,41 +1,52 @@
+import { Promise } from 'mongoose';
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const { Classes } = require('./models');
+const { Class } = require('./models');
+const { User } = require('../users/models')
 const router = express.Router();
 const jsonParser = bodyParser.json();
 
 
 router.get('/', (req, res) => {
-  return Classes.find()
+  return Class.find()
     .then(data => res.json(data.map(data => data.apiRepr())))
     .catch(err => res.status(500).json({ message: 'Internal server error' }));
 });
 
-
+// Retrieves all classes students searched for by teacher name
 router.get('/search/:teacherName', (req, res) => {
- Classes.findById(req.params.studentID)
-  .then(data => {
-    res.json(data.apiRepr())
+ Class
+  .findOne({teachername: req.params.teacherName})
+  .count()
+  .then(count => {
+    if(count === 0){
+      return Promise.reject({ code: 422, message: 'No such teacher exists' });
+    }
+  })
+  .then(name => {
+    res.json(name.apiRepr())
   })
   .catch(err => {
     res.status(500).json({ message: 'Internal server error' })
   });
 })
 
+// Retrieves all classes a student is enrolled in 
 router.get('/student/:studentID', (req, res) => {
- Classes.findById(req.params.id)
+console.log('req.params',req.params)
+ Class.findById(req.params.studentID)
   .then(data => res.json(data.apiRepr()))
   .catch(err => res.status(500).json({ message: 'Internal server error' }));
-  
 })
 
 
 router.post('/', jsonParser, (req, res) => {
   
-  const requiredFields = ['className'];
+  const requiredFields = ['className', 'teacherID', 'teacherName'];
   const missingField = requiredFields.find(field => !(field in req.body));
-  // console.log('req.body', req.body)
+  console.log('req.body', req.body)
 
   if (missingField) {
     return res.status(422).json({
@@ -46,7 +57,7 @@ router.post('/', jsonParser, (req, res) => {
     });
   }
 
-  const stringFields = ['className'];
+  const stringFields = ['className', 'teacherName'];
   const nonStringField = stringFields.find(
     field => field in req.body && typeof req.body[field] !== 'string'
   );
@@ -60,7 +71,7 @@ router.post('/', jsonParser, (req, res) => {
     });
   }
 
-  const explicityTrimmedFields = ['className'];
+  const explicityTrimmedFields = ['className', 'teacherName'];
   const nonTrimmedField = explicityTrimmedFields.find(
     field => req.body[field].trim() !== req.body[field]
   );
@@ -101,7 +112,7 @@ router.post('/', jsonParser, (req, res) => {
   }
 
   let { className, id } = req.body;
-  return Classes.find({ 
+  return Class.find({ 
     className: req.body.className,
    })
     .count()
@@ -116,7 +127,7 @@ router.post('/', jsonParser, (req, res) => {
       }
     })
     .then(() => {
-      return Classes.create({ className });
+      return Class.create({ className });
     })
     .then(user => {
       return res.status(201).json(user.apiRepr())
@@ -148,7 +159,7 @@ router.put('/:studentID', jsonParser, (req, res) => {
       return res.status(400).send(message);
     }
     console.log(`Updating class \`${req.params.studentID}\``);
-    Classes
+    Class
     .findByIdAndUpdate(req.params.studentID, {
       className: req.body.className
     })
@@ -158,7 +169,7 @@ router.put('/:studentID', jsonParser, (req, res) => {
 
 
 router.delete('/:studentID', (req, res) => {
-  Classes
+  Class
     .findByIdAndRemove(req.params.studentID)
     .then(() => res.status(204).end())
     .catch(err => res.status(500).json({message: 'Internal server error'}));
