@@ -1,4 +1,3 @@
-import { Promise } from 'mongoose';
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -36,10 +35,44 @@ router.get('/search/:teacherName', (req, res) => {
 // Retrieves all classes a student is enrolled in 
 router.get('/student/:studentID', (req, res) => {
 console.log('req.params',req.params)
- Class.findById(req.params.studentID)
+ Class.find()
+  .then(classes => {
+    let studentClasses = [];
+    classes.forEach(i => {
+      if (classes[i].student.studentID === req.params.studentID){
+        studentClasses.push({
+          _id: classes[i]._id,
+          className: classes[i].className,
+          teacherName: classes[i].teacherName,
+        })
+      }
+    return studentClasses
+  })
   .then(data => res.json(data.apiRepr()))
   .catch(err => res.status(500).json({ message: 'Internal server error' }));
 })
+
+
+// Retrieves all classes a teacher created
+router.get('/student/:teacherID', (req, res) => {
+  console.log('req.params',req.params)
+   Class.find()
+    .then(classes => {
+      let teacherClasses = [];
+      classes.forEach(i => {
+        if (classes[i].teacherID === req.params.teacherID){
+          studentClasses.push({
+            _id: classes[i]._id,
+            className: classes[i].className,
+            // not sure if we need to return next line
+            students: classes[i].students,
+          })
+        }
+      return res.status(200).json({ studentClasses })
+    })
+    .then(data => res.json(data.apiRepr()))
+    .catch(err => res.status(500).json({ message: 'Internal server error' }));
+  })
 
 
 router.post('/', jsonParser, (req, res) => {
