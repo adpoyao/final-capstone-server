@@ -61,7 +61,7 @@ console.log('req.params',req.params)
   })
 })
 
-///////////////////////////////////////////////////////(WORKING)
+
 // Retrieves all classes a teacher created
 router.get('/student/:teacherID', (req, res) => {
   console.log('req.params',req.params)
@@ -84,7 +84,8 @@ router.get('/student/:teacherID', (req, res) => {
   })
 })
 
-
+///////////////////////////////////////////////////////(WORKING)
+//TEACHER CREATE CLASSES
 router.post('/', jsonParser, (req, res) => {
 
   let { className, teacherName, teacherID } = req.body;
@@ -119,6 +120,7 @@ router.post('/', jsonParser, (req, res) => {
 
 
 ///////////////////////////////////////////////////////////(WORKING)
+//STUDENTS ENROLL IN EXISTING CLASSES
 router.put('/student/enroll/:classID', jsonParser, (req, res) => {
 
   Class.findByIdAndUpdate(req.params.classID, {$push: {students:{studentID: req.body.studentID, studentName: req.body.studentName}}},
@@ -133,16 +135,33 @@ router.put('/student/enroll/:classID', jsonParser, (req, res) => {
 
 });
 
-// Remove from an enrolled class
-router.delete('/student/remove/:classID', (req, res) => {
-  Class
-    .findByIdAndRemove(req.params.classID)
-    .then(() => res.status(204).end())
-    .catch(err => res.status(500).json({message: 'Internal server error'}));
+//TEACHER EDITING EXISTING CLASSE(WORKING)
+router.put('/teacher/edit/:classID', jsonParser, (req, res) => {
+  Class.findByIdAndUpdate(req.params.classID, {$set: {className:req.body.className}},
+    function(err){
+      if(err) {
+        console.log(err);
+      }
+      else {
+        res.send('Everything seems to be working');
+      }
+    });
 });
 
+// Remove from an enrolled class
+router.put('/student/remove/:classID', jsonParser, (req, res) => {
+  Class.findByIdAndUpdate(req.params.classID, {$pull: {students:{studentName: req.body.studentName,studentID: req.body.studentID}}},
+    function(err){
+      if(err) {
+        console.log(err);
+      }
+      else {
+        res.sendStatus(204);
+      }
+    });
+});
 
-// Close a class from future enrollment && delete class from any students enrolled
+// Close a class from future enrollment && delete class from any students enrolled(WORKING)
 router.delete('/teacher/close/:classID', (req, res) => {
   Class
     .findByIdAndRemove(req.params.classID)
