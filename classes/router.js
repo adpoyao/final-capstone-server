@@ -30,77 +30,10 @@ router.get('/student/:studentID', (req, res) => {
   
 })
 
-
+///////////////////////////////////////////////////////(MODIFYING)
 router.post('/', jsonParser, (req, res) => {
   
-  const requiredFields = ['className'];
-  const missingField = requiredFields.find(field => !(field in req.body));
-  // console.log('req.body', req.body)
-
-  if (missingField) {
-    return res.status(422).json({
-      code: 422,
-      reason: 'ValidationError',
-      message: 'Missing field',
-      location: missingField
-    });
-  }
-
-  const stringFields = ['className'];
-  const nonStringField = stringFields.find(
-    field => field in req.body && typeof req.body[field] !== 'string'
-  );
-
-  if (nonStringField) {
-    return res.status(422).json({
-      code: 422,
-      reason: 'ValidationError',
-      message: 'Incorrect field type: expected string',
-      location: nonStringField
-    });
-  }
-
-  const explicityTrimmedFields = ['className'];
-  const nonTrimmedField = explicityTrimmedFields.find(
-    field => req.body[field].trim() !== req.body[field]
-  );
-
-  if (nonTrimmedField) {
-    return res.status(422).json({
-      code: 422,
-      reason: 'ValidationError',
-      message: 'Cannot start or end with whitespace',
-      location: nonTrimmedField
-    });
-  }
-
-  const sizedFields = {
-    className: { min: 1 }, 
-
-  };
-  const tooSmallField = Object.keys(sizedFields).find(
-    field =>
-      'min' in sizedFields[field] &&
-      req.body[field].trim().length < sizedFields[field].min
-  );
-  const tooLargeField = Object.keys(sizedFields).find(
-    field =>
-      'max' in sizedFields[field] &&
-      req.body[field].trim().length > sizedFields[field].max
-  );
-
-  if (tooSmallField || tooLargeField) {
-    return res.status(422).json({
-      code: 422,
-      reason: 'ValidationError',
-      message: tooSmallField
-        ? `Must be at least ${sizedFields[tooSmallField].min} characters long`
-        : `Must be at most ${sizedFields[tooLargeField].max} characters long`,
-      location: tooSmallField || tooLargeField
-    });
-  }
-
-  let { className, id } = req.body;
+  let { className, teacherName, teacherID } = req.body;
   return Classes.find({ 
     className: req.body.className,
    })
@@ -116,10 +49,10 @@ router.post('/', jsonParser, (req, res) => {
       }
     })
     .then(() => {
-      return Classes.create({ className });
+      return Classes.create({ className, teacherName, teacherID });
     })
-    .then(user => {
-      return res.status(201).json(user.apiRepr())
+    .then(Classes => {
+      return res.status(201).json(Classes.apiRepr())
     })
     .catch(err => {
       console.log(err ,'err')
@@ -131,29 +64,19 @@ router.post('/', jsonParser, (req, res) => {
 });
 
 
-router.put('/:studentID', jsonParser, (req, res) => {
-  const requiredFields = [ 'id', 'className',];
-  for (let i=0; i<requiredFields.length; i++) {
-    const field = requiredFields[i];
-    
-    if (!(field in req.body)) {
-      const message = `Missing \`${field}\` in request body`
-      console.error(message);
-      return res.status(400).send(message);
-    }
-  }
-    if (req.params.studentID !== req.body.id) {
-      const message = `Request path id (${req.params.studentID}) and request body id (${req.body.id}) must match`;
-      console.error(message);
-      return res.status(400).send(message);
-    }
-    console.log(`Updating class \`${req.params.studentID}\``);
-    Classes
-    .findByIdAndUpdate(req.params.studentID, {
-      className: req.body.className
+
+router.put('/student/enroll/:classID', jsonParser, (req, res) => {
+  
+  Classes.findByIdAndUpdate(req.params.classID, {$push: {students:{studentID: req.body.studentID, studentName: req.body.studentName}}},
+    function(err){
+      if(err) {
+        console.log(err);
+      }
+      else {
+        res.send('Everything seems to be working');
+      }
     })
-    .then(data => res.status(204).end())
-    .catch(err => res.status(500).json({message: 'Internal Server error'}))
+    
 });
 
 
@@ -163,6 +86,10 @@ router.delete('/:studentID', (req, res) => {
     .then(() => res.status(204).end())
     .catch(err => res.status(500).json({message: 'Internal server error'}));
 });
+
+
+
+
 
   
 module.exports = router;

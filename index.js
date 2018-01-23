@@ -22,7 +22,7 @@ passport.use(jwtStrategy);
 
 app.use(bodyParser.json());
 const jwtAuth = passport.authenticate('jwt', { session: false });
-app.use('/api/classes', classRouter);
+app.use('/api/classes/', classRouter);
 app.use('/api/users/', usersRouter);
 app.use('/api/auth/', authRouter);
 
