@@ -5,34 +5,47 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const { PORT, CLIENT_ORIGIN, DATABASE_URL } = require('./config');
-const classesRouter = require('./classes/router')
+const classRouter = require('./classes/router')
 const { Classes } = require('./classes/models');
+const { router: usersRouter } = require('./users');
+const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
+const passport = require('passport');
 const app = express();
 
 const { dbConnect } = require('./db-mongoose');
 const mongoose = require('mongoose');
 
-app.use(
-  morgan(process.env.NODE_ENV === 'production' ? 'common' : 'dev', {
-    skip: (req, res) => process.env.NODE_ENV === 'test'
-  })
-);
+app.use(morgan('common'));
+
+passport.use(localStrategy);
+passport.use(jwtStrategy);
 
 app.use(bodyParser.json());
-
-app.use('/classes', classesRouter);
+const jwtAuth = passport.authenticate('jwt', { session: false });
+app.use('/api/classes', classRouter);
+app.use('/api/users/', usersRouter);
+app.use('/api/auth/', authRouter);
 
 let server
-function runServer(port = PORT) {
-  server = app.listen(port, () => {
-    console.info(`App listening on port ${server.address().port}`);
-  })
-  .on('error', err => {
-    console.error('Express failed to start');
-    console.error(err);
+function runServer() {
+  return new Promise((resolve, reject) => {
+    mongoose.connect(DATABASE_URL, { useMongoClient: true }, err => {
+      console.log(DATABASE_URL);
+      if (err) {
+        return reject(err);
+      }
+      server = app
+        .listen(PORT, () => {
+          console.log(`Your app is listening on port ${PORT}`);
+          resolve();
+        })
+        .on('error', err => {
+          mongoose.disconnect();
+          reject(err);
+        });
+    });
   });
 }
-  
 function closeServer() {
   return mongoose.disconnect().then(() => {
     return new Promise((resolve, reject) => {
@@ -48,11 +61,7 @@ function closeServer() {
 }
 
 if (require.main === module) {
-  dbConnect().then(() => {
-    console.log('connected to DB')
-  });
-  runServer();
+  runServer().catch(err => console.error(err));
 }
 
 module.exports = { app, runServer, closeServer };
-  
