@@ -20,7 +20,7 @@ router.get('/search/:teacherName', (req, res) => {
   console.log('req', req.params.teacherName)
 
  Class
-  .findOne({teacherName: req.params.teacherName})
+  .find({teacherName: req.params.teacherName})
   // .count()
   // .then(count => {
   //   if(count = 0){
