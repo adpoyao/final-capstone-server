@@ -11,39 +11,18 @@ const ClassesSchema = mongoose.Schema({
         type: String,
         required: true,
         },
-    // contactEmail: {
-    //     type: String,
-    //     // required: true,
-    // },
-    // contactPhone: {
-    //     type: Number,
-    //     // required: true,
-    // },
-    // archived:  {
-    //     type: Boolean,
-    //     default: false,
-    // },
-    // teacherID: {
-    //     type: Schema.Types.ObjectId,
-    //     ref: "User"
-    // },
-//     studentID: {
-//             type: Schema.Types.ObjectId,
-//             ref: "User"
-//         }
+    teacherID: {
+        type: Number,
+        required: true,
+    },
+    teacherName: {
+        type: String,
+        required: true,
+    },
+    students: {
+        type: Array,
+    }
 })
-
-// const UserSchema = mongoose.Schema({
-//     firstName: String,
-//      addedClasses: [{
-//     type: Schema.Types.ObjectId,
-//     ref: 'Classes'
-//  }],
-    // enrolledClasses: [{
-    //     type: Schema.Types.ObjectId,
-    //     ref: 'Classes'
-    // }]
-// }) 
 
 
 ClassesSchema.methods.apiRepr = function () {

@@ -13,7 +13,7 @@ router.get('/', (req, res) => {
 });
 
 
-router.get('/:studentID', (req, res) => {
+router.get('/search/:teacherName', (req, res) => {
  Classes.findById(req.params.studentID)
   .then(data => {
     res.json(data.apiRepr())
@@ -23,12 +23,12 @@ router.get('/:studentID', (req, res) => {
   });
 })
 
-// router.get('/:teacherID', (req, res) => {
-//  Classes.findById(req.params.id)
-//   .then(data => res.json(data.apiRepr()))
-//   .catch(err => res.status(500).json({ message: 'Internal server error' }));
+router.get('/student/:studentID', (req, res) => {
+ Classes.findById(req.params.id)
+  .then(data => res.json(data.apiRepr()))
+  .catch(err => res.status(500).json({ message: 'Internal server error' }));
   
-// })
+})
 
 
 router.post('/', jsonParser, (req, res) => {
