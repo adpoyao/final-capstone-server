@@ -1,12 +1,11 @@
-// import { Schema } from 'mongoose';
 
 const mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
 
 
-const ClassesSchema = mongoose.Schema({
-    
+const ClassSchema = mongoose.Schema({
+
     className: {type: String, required: true},
     teacher: {type: mongoose.Schema.Types.Mixed},
     teacherName: {type: String, required: true},
@@ -18,8 +17,8 @@ const ClassesSchema = mongoose.Schema({
     ]
 })
 
-ClassesSchema.methods.apiRepr = function () {
-    return { 
+ClassSchema.methods.apiRepr = function () {
+    return {
         classID: this._id,
         teacher: this.teacher,
         className: this.className || '',
@@ -29,6 +28,6 @@ ClassesSchema.methods.apiRepr = function () {
   };
 
 
-const Classes = mongoose.models.Classes || mongoose.model('Classes', ClassesSchema);
+const Class = mongoose.models.Class || mongoose.model('Class', ClassSchema);
 
-module.exports = { Classes };
+module.exports = { Class };
