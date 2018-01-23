@@ -17,19 +17,22 @@ router.get('/', (req, res) => {
 
 // Retrieves all classes students searched for by teacher name
 router.get('/search/:teacherName', (req, res) => {
-  console.log('req', req.params.teacherName)
-
  Class
   .find({teacherName: req.params.teacherName})
-  // .count()
-  // .then(count => {
-  //   if(count = 0){
-  //     return Promise.reject({ code: 422, message: 'No such teacher exists' });
-  //   }
-  // })
-  .then(name => {
-    console.log('name', name)
-    res.status(200).json({className: name.className} )
+  .then(classes => {
+    let teacherClasses = [];
+    for(let i = 0; i < classes.length; i++){
+      if(classes[i].teacherName == req.params.teacherName){
+        console.log('classes[i]', classes[i])
+        teacherClasses.push({
+          className: classes[i].className,
+          teacherID: classes[i].teacherID,
+          teacherClasses: classes[i].teacherClasses,
+          students: classes[i].students
+        })
+      }
+    }
+    return res.status(200).json(teacherClasses)
   })
   .catch(err => {
     res.status(500).json({ message: 'Internal server error' })
