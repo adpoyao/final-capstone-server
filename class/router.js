@@ -126,7 +126,7 @@ router.post('/', jsonParser, (req, res) => {
 
 
 
-  app.put('/class/:id', jsonParser, (req, res) => {
+  router.put('/class/:id', jsonParser, (req, res) => {
     const requiredFields = ['className'];
     for (let i=0; i<requiredFields.length; i++) {
       const field = requiredFields[i];
