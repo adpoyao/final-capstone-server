@@ -5,24 +5,25 @@ mongoose.Promise = global.Promise;
 
 
 const ClassSchema = mongoose.Schema({
-    
-    className: {type: String, required: true},
-    teacherID: {type: Number, required: true},
-    teacherName: {type: String, required: true},
-    students: {type: Array}
 
+    className: {type: String, required: true},
+    teacher: {type: mongoose.Schema.Types.Mixed},
+    teacherName: {type: String, required: true},
+    students: [
+        {
+            studentID: {type: String, required: false},
+            studentName: {type: String, required: false}
+        }
+    ]
 })
 
-
 ClassSchema.methods.apiRepr = function () {
-    return { 
-
-        id: this._id,
-        teacherID: this.teacherID, 
-        className: this.className, 
-        teacherName: this.teacherName,
-        students: this.students,
-
+    return {
+        classID: this._id,
+        teacher: this.teacher,
+        className: this.className || '',
+        teacherName: this.teacherName || '',
+        students: this.students || ''
       };
   };
 

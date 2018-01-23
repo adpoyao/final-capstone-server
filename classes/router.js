@@ -39,7 +39,7 @@ router.get('/search/:teacherName', (req, res) => {
 });
 
 
-// Retrieves all classes a student is enrolled in 
+// Retrieves all classes a student is enrolled in
 router.get('/student/:studentID', (req, res) => {
 // console.log('req.params',req.params)
  Class.find()
@@ -60,7 +60,7 @@ router.get('/student/:studentID', (req, res) => {
   })
 })
 
-
+///////////////////////////////////////////////////////(WORKING)
 // Retrieves all classes a teacher created
 router.get('/student/:teacherID', (req, res) => {
   console.log('req.params',req.params)
@@ -85,9 +85,9 @@ router.get('/student/:teacherID', (req, res) => {
 
 
 router.post('/', jsonParser, (req, res) => {
-  
+
   let { className, teacherName, teacherID } = req.body;
-  return Class.find({ 
+  return Class.find({
     className: req.body.className,
    })
     .count()
@@ -117,31 +117,20 @@ router.post('/', jsonParser, (req, res) => {
 });
 
 
-router.put('/:studentID', jsonParser, (req, res) => {
-  const requiredFields = [ 'id', 'className',];
-  for (let i=0; i<requiredFields.length; i++) {
-    const field = requiredFields[i];
-    
-    if (!(field in req.body)) {
-      const message = `Missing \`${field}\` in request body`
-      console.error(message);
-      return res.status(400).send(message);
-    }
-  }
-    if (req.params.studentID !== req.body.id) {
-      const message = `Request path id (${req.params.studentID}) and request body id (${req.body.id}) must match`;
-      console.error(message);
-      return res.status(400).send(message);
-    }
-    console.log(`Updating class \`${req.params.studentID}\``);
-    Class
-    .findByIdAndUpdate(req.params.studentID, {
-      className: req.body.className
-    })
-    .then(data => res.status(204).end())
-    .catch(err => res.status(500).json({message: 'Internal Server error'}))
-});
+///////////////////////////////////////////////////////////(WORKING)
+router.put('/student/enroll/:classID', jsonParser, (req, res) => {
 
+  Class.findByIdAndUpdate(req.params.classID, {$push: {students:{studentID: req.body.studentID, studentName: req.body.studentName}}},
+    function(err){
+      if(err) {
+        console.log(err);
+      }
+      else {
+        res.send('Everything seems to be working');
+      }
+    })
+
+});
 
 // Remove from an enrolled class
 router.delete('/student/remove/:classID', (req, res) => {
