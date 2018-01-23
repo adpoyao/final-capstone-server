@@ -14,7 +14,7 @@ router.get('/', (req, res) => {
     .catch(err => res.status(500).json({ message: 'Internal server error' }));
 });
 
-
+// ================>>>>>Working<<<<<===============
 // Retrieves all classes students searched for by teacher name
 router.get('/search/:teacherName', (req, res) => {
  Class
@@ -45,8 +45,7 @@ router.get('/student/:studentID', (req, res) => {
 console.log('req.params',req.params)
  Class.find()
   .then(classes => {
-    let studentClasses = [];
-    classes.forEach(i => {
+    let studentClasses = classes.map(i => {
       if (classes[i].student.studentID === req.params.studentID){
         studentClasses.push({
           _id: classes[i]._id,
@@ -54,7 +53,7 @@ console.log('req.params',req.params)
           teacherName: classes[i].teacherName,
         })
       }
-    return studentClasses
+      return res.json(studentsClasses)
   })
   .then(data => res.json(data.apiRepr()))
   .catch(err => res.status(500).json({ message: 'Internal server error' }));
