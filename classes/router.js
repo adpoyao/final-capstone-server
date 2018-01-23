@@ -27,8 +27,7 @@ router.get('/search/:teacherName', (req, res) => {
         teacherClasses.push({
           className: classes[i].className,
           teacherID: classes[i].teacherID,
-          teacherClasses: classes[i].teacherClasses,
-          students: classes[i].students
+          teacherClasses: classes[i].teacherClasses
         })
       }
     }
@@ -42,9 +41,10 @@ router.get('/search/:teacherName', (req, res) => {
 
 // Retrieves all classes a student is enrolled in 
 router.get('/student/:studentID', (req, res) => {
-console.log('req.params',req.params)
+// console.log('req.params',req.params)
  Class.find()
   .then(classes => {
+    console.log('classes', classes)
     let studentClasses = classes.map(i => {
       if (classes[i].student.studentID === req.params.studentID){
         studentClasses.push({
