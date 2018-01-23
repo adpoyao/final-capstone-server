@@ -30,7 +30,7 @@ router.get('/student/:studentID', (req, res) => {
   
 })
 
-///////////////////////////////////////////////////////(MODIFYING)
+///////////////////////////////////////////////////////(WORKING)
 router.post('/', jsonParser, (req, res) => {
   
   let { className, teacherName, teacherID } = req.body;
@@ -64,7 +64,7 @@ router.post('/', jsonParser, (req, res) => {
 });
 
 
-
+///////////////////////////////////////////////////////////(WORKING)
 router.put('/student/enroll/:classID', jsonParser, (req, res) => {
   
   Classes.findByIdAndUpdate(req.params.classID, {$push: {students:{studentID: req.body.studentID, studentName: req.body.studentName}}},
