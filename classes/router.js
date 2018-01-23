@@ -17,21 +17,25 @@ router.get('/', (req, res) => {
 
 // Retrieves all classes students searched for by teacher name
 router.get('/search/:teacherName', (req, res) => {
+  console.log('req', req.params.teacherName)
+
  Class
-  .findOne({teachername: req.params.teacherName})
-  .count()
-  .then(count => {
-    if(count === 0){
-      return Promise.reject({ code: 422, message: 'No such teacher exists' });
-    }
-  })
+  .findOne({teacherName: req.params.teacherName})
+  // .count()
+  // .then(count => {
+  //   if(count = 0){
+  //     return Promise.reject({ code: 422, message: 'No such teacher exists' });
+  //   }
+  // })
   .then(name => {
-    res.json(name.apiRepr())
+    console.log('name', name)
+    res.status(200).json({className: name.className} )
   })
   .catch(err => {
     res.status(500).json({ message: 'Internal server error' })
   });
 });
+
 
 // Retrieves all classes a student is enrolled in 
 router.get('/student/:studentID', (req, res) => {
@@ -80,74 +84,7 @@ router.get('/student/:teacherID', (req, res) => {
 
 router.post('/', jsonParser, (req, res) => {
   
-  const requiredFields = ['className', 'teacherID', 'teacherName'];
-  const missingField = requiredFields.find(field => !(field in req.body));
-  console.log('req.body', req.body)
-
-  if (missingField) {
-    return res.status(422).json({
-      code: 422,
-      reason: 'ValidationError',
-      message: 'Missing field',
-      location: missingField
-    });
-  }
-
-  const stringFields = ['className', 'teacherName'];
-  const nonStringField = stringFields.find(
-    field => field in req.body && typeof req.body[field] !== 'string'
-  );
-
-  if (nonStringField) {
-    return res.status(422).json({
-      code: 422,
-      reason: 'ValidationError',
-      message: 'Incorrect field type: expected string',
-      location: nonStringField
-    });
-  }
-
-  const explicityTrimmedFields = ['className', 'teacherName'];
-  const nonTrimmedField = explicityTrimmedFields.find(
-    field => req.body[field].trim() !== req.body[field]
-  );
-
-  if (nonTrimmedField) {
-    return res.status(422).json({
-      code: 422,
-      reason: 'ValidationError',
-      message: 'Cannot start or end with whitespace',
-      location: nonTrimmedField
-    });
-  }
-
-  const sizedFields = {
-    className: { min: 1 }, 
-
-  };
-  const tooSmallField = Object.keys(sizedFields).find(
-    field =>
-      'min' in sizedFields[field] &&
-      req.body[field].trim().length < sizedFields[field].min
-  );
-  const tooLargeField = Object.keys(sizedFields).find(
-    field =>
-      'max' in sizedFields[field] &&
-      req.body[field].trim().length > sizedFields[field].max
-  );
-
-  if (tooSmallField || tooLargeField) {
-    return res.status(422).json({
-      code: 422,
-      reason: 'ValidationError',
-      message: tooSmallField
-        ? `Must be at least ${sizedFields[tooSmallField].min} characters long`
-        : `Must be at most ${sizedFields[tooLargeField].max} characters long`,
-      location: tooSmallField || tooLargeField
-    });
-  }
-
-  let { className, id } = req.body;
+  let { className, teacherName, teacherID } = req.body;
   return Class.find({ 
     className: req.body.className,
    })
@@ -163,10 +100,10 @@ router.post('/', jsonParser, (req, res) => {
       }
     })
     .then(() => {
-      return Class.create({ className });
+      return Class.create({ className, teacherName, teacherID });
     })
-    .then(user => {
-      return res.status(201).json(user.apiRepr())
+    .then(Class => {
+      return res.status(201).json(Class.apiRepr())
     })
     .catch(err => {
       console.log(err ,'err')
