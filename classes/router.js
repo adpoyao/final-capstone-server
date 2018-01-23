@@ -204,12 +204,22 @@ router.put('/:studentID', jsonParser, (req, res) => {
 });
 
 
-router.delete('/:studentID', (req, res) => {
+// Remove from an enrolled class
+router.delete('/student/remove/:classID', (req, res) => {
   Class
-    .findByIdAndRemove(req.params.studentID)
+    .findByIdAndRemove(req.params.classID)
     .then(() => res.status(204).end())
     .catch(err => res.status(500).json({message: 'Internal server error'}));
 });
 
-  
+
+// Close a class from future enrollment && delete class from any students enrolled
+router.delete('/teacher/close/:classID', (req, res) => {
+  Class
+    .findByIdAndRemove(req.params.classID)
+    .then(() => res.status(204).end())
+    .catch(err => res.status(500).json({message: 'Internal server error'}));
+});
+
+
 module.exports = router;
