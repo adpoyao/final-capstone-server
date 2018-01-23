@@ -14,6 +14,7 @@ router.get('/', (req, res) => {
     .catch(err => res.status(500).json({ message: 'Internal server error' }));
 });
 
+
 // Retrieves all classes students searched for by teacher name
 router.get('/search/:teacherName', (req, res) => {
  Class
@@ -30,7 +31,7 @@ router.get('/search/:teacherName', (req, res) => {
   .catch(err => {
     res.status(500).json({ message: 'Internal server error' })
   });
-})
+});
 
 // Retrieves all classes a student is enrolled in 
 router.get('/student/:studentID', (req, res) => {
@@ -50,6 +51,7 @@ console.log('req.params',req.params)
   })
   .then(data => res.json(data.apiRepr()))
   .catch(err => res.status(500).json({ message: 'Internal server error' }));
+  })
 })
 
 
@@ -68,11 +70,12 @@ router.get('/student/:teacherID', (req, res) => {
             students: classes[i].students,
           })
         }
-      return res.status(200).json({ studentClasses })
+      return teacherClasses
     })
     .then(data => res.json(data.apiRepr()))
     .catch(err => res.status(500).json({ message: 'Internal server error' }));
   })
+})
 
 
 router.post('/', jsonParser, (req, res) => {
