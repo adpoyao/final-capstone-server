@@ -8,7 +8,7 @@ mongoose.Promise = global.Promise;
 const ClassesSchema = mongoose.Schema({
     
     className: {type: String, required: true},
-    teacherID: {type: String, required: true},
+    teacher: {type: mongoose.Schema.Types.Mixed},
     teacherName: {type: String, required: true},
     students: [
         {
@@ -21,7 +21,7 @@ const ClassesSchema = mongoose.Schema({
 ClassesSchema.methods.apiRepr = function () {
     return { 
         classID: this._id,
-        teacherID: this.teacherID,
+        teacher: this.teacher,
         className: this.className || '',
         teacherName: this.teacherName || '',
         students: this.students || ''
