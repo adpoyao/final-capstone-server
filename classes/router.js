@@ -16,28 +16,14 @@ router.get('/', (req, res) => {
 
 // ================>>>>>Working<<<<<===============
 // Retrieves all classes students searched for by teacher name
+
 router.get('/search/:teacherName', (req, res) => {
- Class
-  .find({teacherName: req.params.teacherName})
-  .then(classes => {
-    let teacherClasses = [];
-    for(let i = 0; i < classes.length; i++){
-      if(classes[i].teacherName == req.params.teacherName){
-        console.log('classes[i]', classes[i])
-        teacherClasses.push({
-          className: classes[i].className,
-          teacherID: classes[i].teacherID,
-          teacherClasses: classes[i].teacherClasses
-        })
-      }
-    }
-    return res.status(200).json(teacherClasses)
-  })
-  .catch(err => {
-    res.status(500).json({ message: 'Internal server error' })
-  });
+  Class
+    .find( {$text: { $search: req.params.teacherName }}, { students: 0})
+    .then(data => res.json(data))
 });
 
+// {teacherName: { $regex: /^req.params.teacherName/i }}, { students: 0}
 
 // Retrieves all classes a student is enrolled in
 router.get('/student/:studentID', (req, res) => {

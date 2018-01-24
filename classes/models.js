@@ -8,7 +8,7 @@ const ClassSchema = mongoose.Schema({
 
     className: {type: String, required: true},
     teacher: {type: mongoose.Schema.Types.Mixed},
-    teacherName: {type: String, required: true},
+    teacherName: {type: String, required: true, text: true},
     students: [
         {
             studentID: {type: String, required: false},
