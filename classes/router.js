@@ -10,85 +10,70 @@ const jsonParser = bodyParser.json();
 
 router.get('/', (req, res) => {
   return Class.find()
-    .then(data => res.json(data.map(data => data.apiRepr())))
+  .populate('className')
+  .then(data => {
+    console.log('data', data) 
+    res.json(data)
+  })
+  .catch(err => res.status(500).json({ message: 'Internal server error' }));
+});
+
+// ================>>>>>NOT Working<<<<<===============
+// Retrieves all classes students searched for by teacher name
+
+router.get('/search/:lastName', (req, res) => {
+
+  Class
+    .find()
+    .populate('teacher')
+    // .find({'teacher': {'lastName': req.params.lastName}})
+    .then(data => {
+      res.json(data)
+    })
     .catch(err => res.status(500).json({ message: 'Internal server error' }));
 });
 
-// ================>>>>>Working<<<<<===============
-// Retrieves all classes students searched for by teacher name
-
-router.get('/search/:teacherName', (req, res) => {
-  Class
-    .find( {$text: { $search: req.params.teacherName }}, { students: 0})
-    .then(data => res.json(data))
-});
-
-// {teacherName: { $regex: /^req.params.teacherName/i }}, { students: 0}
 
 // Retrieves all classes a student is enrolled in
 router.get('/student/:studentID', (req, res) => {
 // console.log('req.params',req.params)
- Class.find()
-  .then(classes => {
-    console.log('classes', classes)
-    let studentClasses = classes.map(i => {
-      if (classes[i].student.studentID === req.params.studentID){
-        studentClasses.push({
-          _id: classes[i]._id,
-          className: classes[i].className,
-          teacherName: classes[i].teacherName,
-        })
-      }
-      return res.json(studentsClasses)
-  })
-  .then(data => res.json(data.apiRepr()))
-  .catch(err => res.status(500).json({ message: 'Internal server error' }));
-  })
+ Class
+    .find( { "students": { "_id": req.params.studentID }})
+    // .populate("students.student.firstName")
+    .then(data => res.json(data.apiRepr()))
+  // .catch(err => res.status(500).json({ message: 'Internal server error' }));
 })
 
 ///////////////////////////////////////////////////////(WORKING)
 // Retrieves all classes a teacher created
 router.get('/student/:teacherID', (req, res) => {
   console.log('req.params',req.params)
-   Class.find()
-    .then(classes => {
-      let teacherClasses = [];
-      classes.forEach(i => {
-        if (classes[i].teacherID === req.params.teacherID){
-          studentClasses.push({
-            _id: classes[i]._id,
-            className: classes[i].className,
-            // not sure if we need to return next line
-            students: classes[i].students,
-          })
-        }
-      return teacherClasses
-    })
+  Class
+    .find( { "students": { "teacherID": req.params.teacherID }})
     .then(data => res.json(data.apiRepr()))
     .catch(err => res.status(500).json({ message: 'Internal server error' }));
   })
-})
 
 
 router.post('/', jsonParser, (req, res) => {
 
-  let { className, teacherName, teacherID } = req.body;
+  let { className, teacherName, teacherID, studentName, studentID } = req.body;
   return Class.find({
     className: req.body.className,
    })
-    .count()
-    .then(count => {
-      if (count > 0) {
-        return Promise.reject({
-          code: 422,
-          reason: 'ValidationError',
-          message: 'className already taken',
-          location: 'className'
-        });
-      }
-    })
+    // .count()
+    // .then(count => {
+    //   if (count = 0) {
+    //     return Promise.reject({
+    //       code: 422,
+    //       reason: 'ValidationError',
+    //       message: 'className already taken',
+    //       location: 'className'
+    //     });
+    //   }
+    // })
     .then(() => {
-      return Class.create({ className, teacherName, teacherID });
+      return Class.create({ className, teacherName, teacherID, studentName, studentID });
     })
     .then(Class => {
       return res.status(201).json(Class.apiRepr())

@@ -1,4 +1,3 @@
-
 const mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
@@ -7,13 +6,16 @@ mongoose.Promise = global.Promise;
 const ClassSchema = mongoose.Schema({
 
     className: {type: String, required: true},
-    teacher: {type: mongoose.Schema.Types.Mixed},
-    teacherName: {type: String, required: true, text: true},
+    teacher: 
+        {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+        },
     students: [
         {
-            studentID: {type: String, required: false},
-            studentName: {type: String, required: false}
-        }
+        type: mongoose.Schema.Types.ObjectId, //string with ID of rest
+		ref: 'User',
+        },
     ]
 })
 
@@ -22,8 +24,7 @@ ClassSchema.methods.apiRepr = function () {
         classID: this._id,
         teacher: this.teacher,
         className: this.className || '',
-        teacherName: this.teacherName || '',
-        students: this.students || ''
+        students: this.students || '',
       };
   };
 
