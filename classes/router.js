@@ -86,36 +86,19 @@ router.get('/student/:teacherID', (req, res) => {
 
 ///////////////////////////////////////////////////////(WORKING)
 //TEACHER CREATE CLASSES
-router.post('/', jsonParser, (req, res) => {
+router.post('/teacher/create', jsonParser, (req, res) => {
 
   let { className, teacherName, teacherID } = req.body;
   return Class.find({
     className: req.body.className,
    })
-    .count()
-    .then(count => {
-      if (count > 0) {
-        return Promise.reject({
-          code: 422,
-          reason: 'ValidationError',
-          message: 'className already taken',
-          location: 'className'
-        });
-      }
-    })
     .then(() => {
       return Class.create({ className, teacherName, teacherID });
     })
     .then(Class => {
       return res.status(201).json(Class.apiRepr())
     })
-    .catch(err => {
-      console.log(err ,'err')
-      if (err.reason === 'ValidationError') {
-        return res.status(err.code).json(err);
-      }
-      res.status(500).json({ code: 500, message: 'Internal server error' });
-    });
+    .catch(err => res.status(500).json({message: 'Internal server error'}));
 });
 
 
