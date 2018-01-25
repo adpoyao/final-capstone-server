@@ -15,98 +15,53 @@ router.get('/', (req, res) => {
 });
 
 
-// Retrieves all classes students searched for by teacher name
-router.get('/search/:teacherName', (req, res) => {
- Class
-  .find({teacherName: req.params.teacherName})
-  .then(classes => {
-    let teacherClasses = [];
-    for(let i = 0; i < classes.length; i++){
-      if(classes[i].teacherName == req.params.teacherName){
-        console.log('classes[i]', classes[i])
-        teacherClasses.push({
-          className: classes[i].className,
-          teacherID: classes[i].teacherID,
-          teacherClasses: classes[i].teacherClasses,
-          students: classes[i].students
-        })
-      }
-    }
-    return res.status(200).json(teacherClasses)
-  })
-  .catch(err => {
-    res.status(500).json({ message: 'Internal server error' })
-  });
+//Retrive classes by teacher last name
+router.get('/search/:lastName', (req, res) => {
+  let userIds = [];
+  User.find({lastName: req.params.lastName,  role: 'teacher'})
+    .then(users => {
+      userIds = users.map(user => user.id);
+      return Class.find({teacher: {$in: userIds}})
+      // .populate('teacher')
+        .then(data => res.json(data));
+    });
 });
 
 
-// Retrieves all classes a student is enrolled in
-router.get('/student/:studentID', (req, res) => {
-console.log('req.params',req.params)
- Class.find()
-  .then(classes => {
-    let studentClasses = [];
-    classes.forEach(i => {
-      if (classes[i].student.studentID === req.params.studentID){
-        studentClasses.push({
-          _id: classes[i]._id,
-          className: classes[i].className,
-          teacherName: classes[i].teacherName,
-        })
-      }
-    return studentClasses
-  })
-  .then(data => res.json(data.apiRepr()))
-  .catch(err => res.status(500).json({ message: 'Internal server error' }));
-  })
-})
+/////Retrieve classes a student enroll in
+router.get('/student/:id', (req, res) => {
+      return Class.find({students: req.params.id})
+      // .populate('students')
+        .then(data => res.json(data));
 
+});
 
-// Retrieves all classes a teacher created
-router.get('/student/:teacherID', (req, res) => {
-  console.log('req.params',req.params)
-   Class.find()
-    .then(classes => {
-      let teacherClasses = [];
-      classes.forEach(i => {
-        if (classes[i].teacherID === req.params.teacherID){
-          studentClasses.push({
-            _id: classes[i]._id,
-            className: classes[i].className,
-            // not sure if we need to return next line
-            students: classes[i].students,
-          })
-        }
-      return teacherClasses
-    })
-    .then(data => res.json(data.apiRepr()))
-    .catch(err => res.status(500).json({ message: 'Internal server error' }));
-  })
-})
+//Retrieve all classes a teacher create
+router.get('/teacher/:id', (req, res) => {
+  return Class.find({teacher: req.params.id})
+  // .populate('teacher')
+    .then(data => res.json(data));
+
+});
 
 ///////////////////////////////////////////////////////(WORKING)
 //TEACHER CREATE CLASSES
 router.post('/teacher/create', jsonParser, (req, res) => {
 
-  let { className, teacherName, teacherID } = req.body;
-  return Class.find({
-    className: req.body.className,
-   })
-    .then(() => {
-      return Class.create({ className, teacherName, teacherID });
-    })
+  let { className, id } = req.body;
+    return Class.create({ className: req.body.className, teacher: req.body.id})
     .then(Class => {
       return res.status(201).json(Class.apiRepr())
     })
     .catch(err => res.status(500).json({message: 'Internal server error'}));
-});
+    });
 
 
 ///////////////////////////////////////////////////////////(WORKING)
 //STUDENTS ENROLL IN EXISTING CLASSES
 router.put('/student/enroll/:classID', jsonParser, (req, res) => {
 
-  Class.findByIdAndUpdate(req.params.classID, {$push: {students:{studentID: req.body.studentID, studentName: req.body.studentName}}},
+  Class.findByIdAndUpdate(req.params.classID, {$push: {students:req.body.studentID}},
     function(err){
       if(err) {
         console.log(err);
@@ -115,8 +70,7 @@ router.put('/student/enroll/:classID', jsonParser, (req, res) => {
         res.send('Everything seems to be working');
       }
     })
-
-});
+ });
 
 //TEACHER EDITING EXISTING CLASSE(WORKING)
 router.put('/teacher/edit/:classID', jsonParser, (req, res) => {
@@ -133,7 +87,7 @@ router.put('/teacher/edit/:classID', jsonParser, (req, res) => {
 
 // Remove from an enrolled class
 router.put('/student/remove/:classID', jsonParser, (req, res) => {
-  Class.findByIdAndUpdate(req.params.classID, {$pull: {students:{studentName: req.body.studentName,studentID: req.body.studentID}}},
+  Class.findByIdAndUpdate(req.params.classID, {$pull: {students:{student: req.body.id}}},
     function(err){
       if(err) {
         console.log(err);
