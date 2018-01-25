@@ -75,17 +75,24 @@ router.post('/teacher/create', jsonParser, (req, res) => {
 ///////////////////////////////////////////////////////////(WORKING)
 //STUDENTS ENROLL IN EXISTING CLASSES
 router.put('/student/enroll/:classID', jsonParser, (req, res) => {
-
-  Class.findByIdAndUpdate(req.params.classID, {$push: {students:req.body.studentID}},
-    function(err){
-      if(err) {
-        console.log(err);
-      }
-      else {
-        res.send('Everything seems to be working');
+  return Class.find({_id: req.params.classID})
+    .then(Class => {
+      if (Class[0].students.includes(req.body.studentID)) {
+        res.json({message: 'you were already enrolled in this class'})
       }
     })
- });
+    .then(() => {
+      return Class.findByIdAndUpdate(req.params.classID, {$push: {students:req.body.studentID}},
+        function(err){
+          if(err) {
+            console.log(err);
+          }
+          else {
+            res.send('Everything seems to be working');
+          }
+        })
+    })
+});
 
 //TEACHER EDITING EXISTING CLASSE(WORKING)
 router.put('/teacher/edit/:classID', jsonParser, (req, res) => {
