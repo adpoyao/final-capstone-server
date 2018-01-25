@@ -10,7 +10,7 @@ const jsonParser = bodyParser.json();
 
 router.get('/', (req, res) => {
   return Class.find()
-  .populate('className')
+  // .populate('className')
   .then(data => {
     console.log('data', data) 
     res.json(data)
@@ -18,42 +18,39 @@ router.get('/', (req, res) => {
   .catch(err => res.status(500).json({ message: 'Internal server error' }));
 });
 
-// ================>>>>>NOT Working<<<<<===============
+// ================>>>>>Working<<<<<===============
+// Retrieves all classes students searched for by teacher name
+
 // Retrieves all classes students searched for by teacher name
 
 router.get('/search/:lastName', (req, res) => {
-
-  Class
-    .find()
-    .populate('teacher')
-    // .find({'teacher': {'lastName': req.params.lastName}})
-    .then(data => {
-      res.json(data)
-    })
-    .catch(err => res.status(500).json({ message: 'Internal server error' }));
+  let userIds = [];
+  User.find({lastName: req.params.lastName,  role: 'teacher'})
+    .then(users => {
+      console.log('users', users)
+      userIds = users.map(user => user._id);
+      return Class.find({teacher: {$in: userIds}})
+        .then(data => {
+          console.log('data', data)
+          res.json(data)});
+    });
 });
 
+/////Retrieve classes a student enroll in
+router.get('/student/:id', (req, res) => {
+  return Class.find({students: req.params.id})
+  .populate('students')
+    .then(data => res.json(data));
 
-// Retrieves all classes a student is enrolled in
-router.get('/student/:studentID', (req, res) => {
-// console.log('req.params',req.params)
- Class
-    .find( { "students": { "_id": req.params.studentID }})
-    // .populate("students.student.firstName")
-    .then(data => res.json(data.apiRepr()))
-  // .catch(err => res.status(500).json({ message: 'Internal server error' }));
-})
+});
 
-///////////////////////////////////////////////////////(WORKING)
-// Retrieves all classes a teacher created
-router.get('/student/:teacherID', (req, res) => {
-  console.log('req.params',req.params)
-  Class
-    .find( { "students": { "teacherID": req.params.teacherID }})
-    .then(data => res.json(data.apiRepr()))
-    .catch(err => res.status(500).json({ message: 'Internal server error' }));
-  })
+//Retrieve all classes a teacher create
+router.get('/teacher/:id', (req, res) => {
+return Class.find({teacher: req.params.id})
+// .populate('teacher')
+.then(data => res.json(data));
 
+});
 
 router.post('/', jsonParser, (req, res) => {
 
