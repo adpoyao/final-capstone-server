@@ -22,7 +22,7 @@ router.get('/search/:lastName', (req, res) => {
     .then(users => {
       userIds = users.map(user => user.id);
       return Class.find({teacher: {$in: userIds}})
-      // .populate('teacher')
+      .populate('teacher')
         .then(data => res.json(data));
     });
 });
@@ -31,7 +31,8 @@ router.get('/search/:lastName', (req, res) => {
 /////Retrieve classes a student enroll in
 router.get('/student/:id', (req, res) => {
       return Class.find({students: req.params.id})
-      // .populate('students')
+      .populate('students')
+      .populate('teacher')
         .then(data => res.json(data));
 
 });
