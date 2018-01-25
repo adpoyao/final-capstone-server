@@ -6,6 +6,8 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const { PORT, CLIENT_ORIGIN, DATABASE_URL } = require('./config');
 const classRouter = require('./classes/router')
+const { Mood } = require('./mood/models');
+const moodRouter = require('./mood/router')
 const { Class } = require('./classes/models');
 const { router: usersRouter } = require('./users');
 const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
@@ -30,6 +32,7 @@ const jwtAuth = passport.authenticate('jwt', { session: false });
 app.use('/api/classes/', classRouter);
 app.use('/api/users/', usersRouter);
 app.use('/api/auth/', authRouter);
+app.use('/api/mood/', moodRouter);
 
 let server
 function runServer() {
