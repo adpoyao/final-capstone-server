@@ -24,11 +24,12 @@ router.get('/', (req, res) => {
 //Retrive classes by teacher last name
 router.get('/search/:lastName', (req, res) => {
   let userIds = [];
-  User.find({lastName: req.params.lastName,  role: 'teacher'})
+
+  User.find({lastName: new RegExp('^'+req.params.lastName+'$', "i"),  role: 'teacher'})
     .then(users => {
       userIds = users.map(user => user.id);
-      return Class.find({teacher: {$in: userIds}})
-      // .populate('teacher')
+      return Class.find({teacher: {$in: userIds} }, {'__v': 0})
+      .populate('teacher', { 'username': 0, 'password': 0 })
         .then(data => res.json(data));
     });
 });
