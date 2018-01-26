@@ -16,5 +16,15 @@ router.post('/', jsonParser, (req, res) => {
         })
         .catch(err => res.status(500).json({message: 'Internal server error'}));
         });
+
+router.get('/', (req, res) => {
+            return Mood.find()
+            .populate('studentID')
+            .then(data => {
+              console.log('data', data) 
+              res.json(data)
+            })
+            .catch(err => res.status(500).json({ message: 'Internal server error' }));
+          });
     
 module.exports = {router};
