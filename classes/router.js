@@ -44,7 +44,7 @@ router.get('/student/:id', (req, res) => {
 
 /////Retrieve classes a student enroll in
 router.get('/student/:id', (req, res) => {
-      return Class.find({students: req.params.id})
+      return Class.find({students: req.params.id}, {'username': 0, 'password': 0})
       .populate('students')
       .populate('teacher')
         .then(data => res.json(data));
