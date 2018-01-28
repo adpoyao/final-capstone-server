@@ -23,23 +23,16 @@ let { studentID, moodType, caption, dateTime } = req.body;
 // Obtains all of user's submitted moods
 
 router.get('/:studentID', (req, res) => {
-  return Mood.find({studentID: req.params.studentID}, {'_id': 0, '__v': 0})
-    .then((data) => {
-      console.log('data.moodType', data)
-     return Mood.aggregate([
-       {
-         $group:
-          {
-            _id: 0,
-            moodType: { $sum: "moodType"},
-            count: { $sum: 1 }
-          }
-       }
-     ])
-    })    
-    .then(data => res.json(data))
+  return Mood.aggregate([
+    {
+      $group: { 
+        _id: { studentID: req.params.studentID, moodType: "$moodType", count: {$sum: 1} }
+      }
+    },
+  ])
+  .then(data => res.json(data))
+  .catch(err => res.status(500).json({ message: 'Internal server error' }));
 })
-
 // Used for testing
 
 router.get('/', (req, res) => {
