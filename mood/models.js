@@ -15,7 +15,7 @@ MoodSchema.methods.apiRepr = function () {
         moodID: this._id,
         studentID: this.studentID || '',
         moodType: this.moodType || '',
-        caption: this.caption || '',
+        caption: this.caption,
         dateTime: this.dateTime || ''
    };
 

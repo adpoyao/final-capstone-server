@@ -77,7 +77,12 @@ router.put('/student/enroll/:classID', jsonParser, (req, res) => {
   return Class.find({_id: req.params.classID})
     .then(Class => {
       if (Class[0].students.includes(req.body.studentID)) {
-        res.json({message: 'you were already enrolled in this class'})
+        return Promise.reject({
+          code: 422,
+          reason: 'ValidationError',
+          message: 'you were already enrolled in this class',
+          location: '_id'
+        });
       }
     })
     .then(() => {
@@ -90,6 +95,13 @@ router.put('/student/enroll/:classID', jsonParser, (req, res) => {
             res.send('Everything seems to be working');
           }
         })
+    })
+    .catch(err => {
+      if (err.reason === 'ValidationError') {
+        return res.status(err.code);
+      }
+      console.error(err)
+      res.status(500).json({code: 500, message: 'Internal server error'});
     })
 });
 
@@ -108,7 +120,7 @@ router.put('/teacher/edit/:classID', jsonParser, (req, res) => {
 
 // Remove from an enrolled class
 router.put('/student/remove/:classID', jsonParser, (req, res) => {
-  Class.findByIdAndUpdate(req.params.classID, {$pull: {students:{student: req.body.id}}},
+  Class.findByIdAndUpdate(req.params.classID, {$pull: {students:req.body.studentID}},
     function(err){
       if(err) {
         console.log(err);
