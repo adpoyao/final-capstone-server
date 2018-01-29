@@ -28,31 +28,36 @@ router.get('/:teacherID', (req, res) => {
             .limit(1)
             .sort({ _id: -1 })
             .then(data => {
-              // console.log(data[0]);
               result[i].students[j].lastMood = data;
-              console.log(result[i].students[j].lastMood[0]);
             });
         }
       }
-      console.log('RESULT!!!', result[0].students[0]);
       res.status(200).json(result);
     })
     .catch(err => res.status(500).json({ message: 'Internal server error' }));
 });
 
 router.get('/detail/:studentID', (req, res) => {
-  let result;
-  return User.find({_id: req.params.studentID}, { 'username': 0, 'password': 0, '__v': 0, 'role': 0})
+  return Mood.find({studentID: req.params.studentID}, {'__v': 0})
+    .populate('studentID', {'__v':0, '_id': 0, 'username': 0, 'password': 0, 'role': 0})
     .then(data => {
-      result = data;
-      return Mood.find({studentID: req.params.studentID}, {'__v': 0, 'studentID': 0})
-        .then(data => {
-          result[0].mood = data;
-          console.log(result[0].mood);
-          res.status(200).json(result[0]);
-        });
+      res.status(200).json(data);
     })
     .catch(err => res.status(500).json({message: 'Internal server error'}));
 });
+
+
+//   return User.find({_id: req.params.studentID}, { 'username': 0, 'password': 0, '__v': 0, 'role': 0})
+//     .then(data => {
+//       result = data;
+//       return Mood.find({studentID: req.params.studentID}, {'__v': 0, 'studentID': 0})
+//         .then(data => {
+//           result[0].mood = data;
+//           console.log(result[0].mood);
+//           res.status(200).json(result[0]);
+//         });
+//     })
+//     .catch(err => res.status(500).json({message: 'Internal server error'}));
+// });
 
 module.exports = { router };
