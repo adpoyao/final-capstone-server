@@ -19,30 +19,26 @@ let { studentID, moodType, caption, dateTime } = req.body;
     .catch(err => res.status(500).json({message: 'Internal server error'}))
 });
 
-router.get('/:studentID', (req, res) => {
-  return Mood.find({studentID: req.params.studentID})
-  .then(data.aggregate([
-    {
-      $match: {
-        $moodType: "$moodType",
-        count: {$sum: 1} 
-      }
-    }
-  ])) 
-  .then(data => res.json(data))
-  .catch(err => res.status(500).json({ message: 'Internal server error' }))
-});
 
 // Obtains all of user's submitted moods
 
-// router.get('/:studentID', (req, res) => {
-//   return Mood.find({studentID: req.params.studentID})
-//   .then(data => {
-//     console.log(data)
-//     studentObject = data.map(mood => mood.moodType)
-//     res.json(studentObject)})
-//   })
-//   .catch(err => res.status(500).json({ message: 'Internal server error' }));
+router.get('/:studentID', (req, res) => {
+  let moods = {}
+  let moodValues = []
+    return Mood.find({studentID: req.params.studentID})
+    .then(studentInfo => {
+      let studentMoods = studentInfo.map(mood => mood.moodType)
+      studentMoods.forEach(item => {
+        moods[item] ? moods[item]+=1 : moods[item] = 1 });
+
+      for (let key in moods){
+        moodValues.push({text: key, value: moods[key]})
+      }
+      return res.json(moodValues)
+    })
+    .catch(err => res.status(500).json({ message: 'Internal server error' }));
+})
+
 // Used for testing
 
 router.get('/', (req, res) => {
