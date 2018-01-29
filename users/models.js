@@ -17,6 +17,7 @@ const UserSchema = mongoose.Schema({
   firstName: {type: String, default: ''},
   lastName: {type: String, default: '', text: true},
   role: {type: String, required: true},
+  lastMood: {type: mongoose.Schema.Types.Mixed, ref: 'User'}
 
 });
 

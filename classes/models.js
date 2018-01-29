@@ -10,7 +10,7 @@ const ClassSchema = mongoose.Schema({
     students: [
         {type: mongoose.Schema.Types.Mixed, ref: 'User'}
     ]
-})
+}, { strict: false })
 
 ClassSchema.methods.apiRepr = function () {
     return {

@@ -14,11 +14,28 @@ const { User } = require('../users/models');
 const router = express.Router();
 
 router.get('/:teacherID', (req, res) => {
+  let result;
+
   return Class.find({teacher: req.params.teacherID})
+    .lean()
     .populate('students', { 'username': 0, 'password': 0, '__v': 0, 'role': 0})
-    
     .then(data => {
-      res.status(200).json(data);
+      result = data;
+
+      for(let i=0; i<result.length; i++){
+        for(let j=0; j<result[i].students.length; j++){
+          Mood.find({studentID: result[i].students[j]._id}, {'studentID': 0, '__v': 0})
+            .limit(1)
+            .sort({ _id: -1 })
+            .then(data => {
+              // console.log(data[0]);
+              result[i].students[j].lastMood = data;
+              console.log(result[i].students[j].lastMood[0]);
+            });
+        }
+      }
+      console.log('RESULT!!!', result[0].students[0]);
+      res.status(200).json(result);
     })
     .catch(err => res.status(500).json({ message: 'Internal server error' }));
 });
