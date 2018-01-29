@@ -27,9 +27,9 @@ router.get('/:teacherID', (req, res) => {
           Mood.find({studentID: result[i].students[j]._id}, {'studentID': 0, '__v': 0})
             .limit(1)
             .sort({ _id: -1 })
-            .then(data => {
-              result[i].students[j].lastMood = data;
-            });
+            .then(data => {  
+              result[i].students[j].lastMood = data
+            })
         }
       }
       res.status(200).json(result);
@@ -40,6 +40,7 @@ router.get('/:teacherID', (req, res) => {
 router.get('/detail/:studentID', (req, res) => {
   return Mood.find({studentID: req.params.studentID}, {'__v': 0})
     .populate('studentID', {'__v':0, '_id': 0, 'username': 0, 'password': 0, 'role': 0})
+    .sort({dateTime: -1})
     .then(data => {
       res.status(200).json(data);
     })
