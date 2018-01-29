@@ -29,7 +29,7 @@ router.get('/:studentID', (req, res) => {
     .then(studentInfo => {
       let studentMoods = studentInfo.map(mood => mood.moodType)
       studentMoods.forEach(item => {
-        moods[item] ? moods[item]+=1 : moods[item] = 1 });
+        moods[item] ? moods[item]+=10 : moods[item] = 10 });
 
       for (let key in moods){
         moodValues.push({text: key, value: moods[key]})
