@@ -8,7 +8,9 @@ const { PORT, CLIENT_ORIGIN, DATABASE_URL } = require('./config');
 const classRouter = require('./classes/router');
 const { Class } = require('./classes/models');
 const { Mood } = require('./mood/models');
-const { router: moodRouter } = require('./mood');
+const { Alert } = require('./alert/models');
+const alertRouter = require('./alert/router');
+const { router: moodRouter } = require('./mood')
 const { router: usersRouter } = require('./users');
 const { router: yourStudentsRouter } = require('./students');
 const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
@@ -34,8 +36,8 @@ app.use('/api/classes/', classRouter);
 app.use('/api/users/', usersRouter);
 app.use('/api/auth/', authRouter);
 app.use('/api/mood/', moodRouter);
+app.use('/api/alert/', alertRouter);
 app.use('/api/yourStudents/', yourStudentsRouter);
-
 
 let server
 function runServer() {

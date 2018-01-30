@@ -43,7 +43,7 @@ router.get('/:studentID', (req, res) => {
 
 router.get('/', (req, res) => {
   return Mood.find()
-    .populate('studentID')
+    //.populate('studentID')
     .then(data => res.json(data))
     .catch(err => res.status(500).json({ message: 'Internal server error' }));
 });

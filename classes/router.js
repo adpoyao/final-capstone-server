@@ -12,8 +12,7 @@ router.get('/', (req, res) => {
   return Class.find()
   // .populate('className')
   .then(data => {
-    console.log('data', data) 
-    res.json(data)
+     res.json(data)
   })
   .catch(err => res.status(500).json({ message: 'Internal server error' }));
 });
@@ -37,6 +36,7 @@ router.get('/search/:lastName', (req, res) => {
 /////Retrieve classes a student enroll in
 router.get('/student/:id', (req, res) => {
       return Class.find({students: req.params.id})
+      .populate('students')
       .populate('teacher', { 'username': 0, 'password': 0, '__v': 0 })
         .then(data => res.json(data));
 });
