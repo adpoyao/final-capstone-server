@@ -24,16 +24,14 @@ router.get('/:teacherID', (req, res) => {
       console.log('result', result)
       for(let i=0; i<result.length; i++){
         for(let j=0; j<result[i].students.length; j++){
-          Mood.find({studentID: result[i].students[j]._id,
-                    lastName: result[i].students[j].lastName}, {'studentID': 0, '__v': 0})
-            .sort({lastName: 1})
+          Mood.find({studentID: result[i].students[j]._id}, {'studentID': 0, '__v': 0})
+          // sort not working but intended to return student names in alphabetical order
+            .sort({lastName: -1})
             .then(data => {  
               result[i].students[j].lastMood = data
-        
             })
         }
       }
-      // console.log('result', result.students)
       res.status(200).json(result);
     })
     .catch(err => res.status(500).json({ message: 'Internal server error' }));
