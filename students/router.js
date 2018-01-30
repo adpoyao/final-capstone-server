@@ -20,18 +20,20 @@ router.get('/:teacherID', (req, res) => {
     .lean()
     .populate('students', { 'username': 0, 'password': 0, '__v': 0, 'role': 0})
     .then(data => {
-      result = data;
-
+      result = data
+      console.log('result', result)
       for(let i=0; i<result.length; i++){
         for(let j=0; j<result[i].students.length; j++){
-          Mood.find({studentID: result[i].students[j]._id}, {'studentID': 0, '__v': 0})
-            .limit(1)
-            .sort({ _id: -1 })
+          Mood.find({studentID: result[i].students[j]._id,
+                    lastName: result[i].students[j].lastName}, {'studentID': 0, '__v': 0})
+            .sort({lastName: 1})
             .then(data => {  
               result[i].students[j].lastMood = data
+        
             })
         }
       }
+      // console.log('result', result.students)
       res.status(200).json(result);
     })
     .catch(err => res.status(500).json({ message: 'Internal server error' }));
