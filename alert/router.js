@@ -68,7 +68,7 @@ router.put('/panic/dismiss/:panicID', jsonParser, (req, res) => {
   ///REIEVE ALL ACTIVE PANIC ALERTS OF LINKED STUDENTS
   router.get('/panic/:teacherID', (req, res) => {
     return Alert.find({teachers: req.params.teacherID, active: true})
-    //.populate('teachers', { 'username': 0, 'password': 0, '__v': 0 })
+    .populate('studentID', { 'username': 0, 'password': 0, '__v': 0 })
       .then(data => res.json(data));
 });
 
@@ -76,16 +76,16 @@ router.put('/panic/dismiss/:panicID', jsonParser, (req, res) => {
 router.get('/mood/:teacherID', (req, res) => {
     let arrayMood = [];
     return Alert.find({teachers: req.params.teacherID})
-    //.populate('teachers', { 'username': 0, 'password': 0, '__v': 0 })
+    //.populate('studentID', { 'username': 0, 'password': 0, '__v': 0 })
       .then((data) => {
         console.log(data)
           const promises = [];
         for (let i = 0; i < data.length; i++) {
             x = []
-            promises.push(Mood.find({studentID: data[i].studentID})
+            promises.push(Mood.find({studentID: data[i].studentID}).populate('studentID', { 'username': 0, 'password': 0, '__v': 0 })
                 .then((mood) => {
                     console.log('MOOOOD', mood)
-                    let list = ['pleased', 'bored', 'cozy', 'serene', 'depressed'] //===>  WE CAN ADJUST THIS LIST BASED ON CRITICAL MOODS
+                    let list = ['enraged', 'livid', 'fuming', 'anxious', 'repulsed', 'disgusted', 'pessimistic', 'alienated', 'despondent', 'despair', 'panicked', 'furious', 'frightened', 'apprehensive', 'troubled', 'glum', 'morose', 'miserable', 'depressed', 'hopeless', 'lonely', 'sullen', 'desolate'] //===>  WE CAN ADJUST THIS LIST BASED ON CRITICAL MOODS
                     for (let i = 0; i < mood.length; i++) {
                         if (list.includes(mood[i].moodType)) {
                             arrayMood.push(mood[i])
@@ -114,7 +114,7 @@ router.get('/panic/:teacherID/:studentID', (req, res) => {
             promises.push(Mood.find({studentID: data[i].studentID})
                 .then((mood) => {
                     console.log('MOOOOD', mood)
-                    let list = ['pleased', 'bored', 'cozy', 'serene', 'depressed'] //===>  WE CAN ADJUST THIS LIST BASED ON CRITICAL MOODS
+                    let list = ['enraged', 'livid', 'fuming', 'anxious', 'repulsed', 'disgusted', 'pessimistic', 'alienated', 'despondent', 'despair', 'panicked', 'furious', 'frightened', 'apprehensive', 'troubled', 'glum', 'morose', 'miserable', 'depressed', 'hopeless', 'lonely', 'sullen', 'desolate'] //===>  WE CAN ADJUST THIS LIST BASED ON CRITICAL MOODS
                     for (let i = 0; i < mood.length; i++) {
                         if (list.includes(mood[i].moodType)) {
                             arrayMood.push(mood[i])
