@@ -1,3 +1,4 @@
+const moment = require('moment');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -74,6 +75,7 @@ router.put('/panic/dismiss/:panicID', jsonParser, (req, res) => {
 
 ////Retrieves all critical emotion alerts of linked students
 router.get('/mood/:teacherID', (req, res) => {
+    let start = moment().subtract(1440, 'minutes').toDate()
     let arrayMood = [];
     return Alert.find({teachers: req.params.teacherID})
     //.populate('studentID', { 'username': 0, 'password': 0, '__v': 0 })
@@ -82,7 +84,7 @@ router.get('/mood/:teacherID', (req, res) => {
           const promises = [];
         for (let i = 0; i < data.length; i++) {
             x = []
-            promises.push(Mood.find({studentID: data[i].studentID}).populate('studentID', { 'username': 0, 'password': 0, '__v': 0 })
+            promises.push(Mood.find({studentID: data[i].studentID, dateTime: { "$gte": start }}).populate('studentID', { 'username': 0, 'password': 0, '__v': 0 })
                 .then((mood) => {
                     console.log('MOOOOD', mood)
                     let list = ['enraged', 'livid', 'fuming', 'anxious', 'repulsed', 'disgusted', 'pessimistic', 'alienated', 'despondent', 'despair', 'panicked', 'furious', 'frightened', 'apprehensive', 'troubled', 'glum', 'morose', 'miserable', 'depressed', 'hopeless', 'lonely', 'sullen', 'desolate'] //===>  WE CAN ADJUST THIS LIST BASED ON CRITICAL MOODS
