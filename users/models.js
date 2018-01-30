@@ -16,8 +16,10 @@ const UserSchema = mongoose.Schema({
   },
   firstName: {type: String, default: ''},
   lastName: {type: String, default: '', text: true},
+  email: {type: String, required: false}, 
+  contact: {type: Number, required: false},
   role: {type: String, required: true},
-
+  lastMood: {type: mongoose.Schema.Types.Mixed, ref: 'User'}
 });
 
 UserSchema.methods.apiRepr = function() {

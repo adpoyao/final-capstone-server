@@ -33,7 +33,6 @@ router.get('/search/:lastName', (req, res) => {
     });
 });
 
-
 /////Retrieve classes a student enroll in
 router.get('/student/:id', (req, res) => {
       return Class.find({students: req.params.id})

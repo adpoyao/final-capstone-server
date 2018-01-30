@@ -6,11 +6,12 @@ mongoose.Promise = global.Promise;
 const ClassSchema = mongoose.Schema({
 
     className: {type: String, required: true},
+    classPeriod: {type: String, required: false},
     teacher: {type: mongoose.Schema.Types.ObjectId, ref: 'User'},
     students: [
         {type: mongoose.Schema.Types.Mixed, ref: 'User'}
     ]
-})
+}, { strict: false })
 
 ClassSchema.methods.apiRepr = function () {
     return {

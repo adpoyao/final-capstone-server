@@ -23,9 +23,20 @@ let { studentID, moodType, caption, dateTime } = req.body;
 // Obtains all of user's submitted moods
 
 router.get('/:studentID', (req, res) => {
-  return Mood
-    .find({studentID: req.params.studentID}, {'_id': 0, '__v': 0})
-    .then(data => res.json(data))
+  let moods = {}
+  let moodValues = []
+    return Mood.find({studentID: req.params.studentID})
+    .then(studentInfo => {
+      let studentMoods = studentInfo.map(mood => mood.moodType)
+      studentMoods.forEach(item => {
+        moods[item] ? moods[item]+=10 : moods[item] = 10 });
+
+      for (let key in moods){
+        moodValues.push({text: key, value: moods[key]})
+      }
+      return res.json(moodValues)
+    })
+    .catch(err => res.status(500).json({ message: 'Internal server error' }));
 })
 
 // Used for testing
