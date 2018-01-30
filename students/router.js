@@ -20,16 +20,16 @@ router.get('/:teacherID', (req, res) => {
     .lean()
     .populate('students', { 'username': 0, 'password': 0, '__v': 0, 'role': 0})
     .then(data => {
-      result = data;
-
+      result = data
+      console.log('result', result)
       for(let i=0; i<result.length; i++){
         for(let j=0; j<result[i].students.length; j++){
           Mood.find({studentID: result[i].students[j]._id}, {'studentID': 0, '__v': 0})
-            .limit(1)
-            .sort({ _id: -1 })
-            .then(data => {
-              result[i].students[j].lastMood = data;
-            });
+          // sort not working but intended to return student names in alphabetical order
+            .sort({lastName: -1})
+            .then(data => {  
+              result[i].students[j].lastMood = data
+            })
         }
       }
       res.status(200).json(result);
@@ -40,6 +40,7 @@ router.get('/:teacherID', (req, res) => {
 router.get('/detail/:studentID', (req, res) => {
   return Mood.find({studentID: req.params.studentID}, {'__v': 0})
     .populate('studentID', {'__v':0, '_id': 0, 'username': 0, 'password': 0, 'role': 0})
+    .sort({dateTime: -1})
     .then(data => {
       res.status(200).json(data);
     })
