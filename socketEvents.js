@@ -16,6 +16,7 @@ function socketServer(io) {
   
       socket.on('new message', (conversation) => {
         io.sockets.in(conversation).emit('refresh messages', conversation);
+        console.log('new message working')
       });
   
       socket.on('disconnect', () => {
