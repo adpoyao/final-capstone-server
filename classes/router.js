@@ -54,8 +54,8 @@ router.get('/teacher/:id', (req, res) => {
 //TEACHER CREATE CLASSES
 router.post('/teacher/create', jsonParser, (req, res) => {
 
-  let { className, id } = req.body;
-    return Class.create({ className: req.body.className, teacher: req.body.id})
+  let { id, className, classPeriod, email, phone } = req.body;
+    return Class.create({ teacher: id, className, classPeriod, email, phone })
     .then(Class => {
       return res.status(201).json(Class.apiRepr())
     })
