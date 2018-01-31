@@ -27,15 +27,18 @@ router.get('/:teacherID', (req, res) => {
           Mood.find({studentID: result[i].students[j]._id}, {'studentID': 0, '__v': 0})
           // sort not working but intended to return student names in alphabetical order
             .sort({lastName: -1})
-            .then(data => {  
-              result[i].students[j].lastMood = data
+            .then(response => {  
+              //result[i].students[j].lastMood = data
+              console.log('RESPONSE', response)
             })
         }
-      }
+     }
       res.status(200).json(result);
     })
     .catch(err => res.status(500).json({ message: 'Internal server error' }));
 });
+
+
 
 router.get('/detail/:studentID', (req, res) => {
   return Mood.find({studentID: req.params.studentID}, {'__v': 0})
