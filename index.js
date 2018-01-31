@@ -27,11 +27,7 @@ const io = require('socket.io')(http);
 app.use(express.static(__dirname + '/public'));
 app.use('/assets', express.static('assets'));
 
-// Listen on port 5000
-const port = process.env.PORT || 5000;
-http.listen(port, function() {
-    console.log('listening on port', port);
-});
+
 
 const { dbConnect } = require('./db-mongoose');
 const mongoose = require('mongoose');
@@ -70,11 +66,9 @@ function runServer() {
       if (err) {
         return reject(err);
       }
-      server = app
-        .listen(PORT, () => {
-          console.log(`Your app is listening on port ${PORT}`);
-          resolve();
-        })
+      server = http.listen(PORT, function() {
+          console.log('listening on port', PORT);
+      })
         .on('error', err => {
           mongoose.disconnect();
           reject(err);
