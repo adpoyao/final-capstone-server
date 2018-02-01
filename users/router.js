@@ -1,18 +1,15 @@
 'use strict';
+
 const express = require('express');
 const bodyParser = require('body-parser');
-
 const {User} = require('./models');
-
 const router = express.Router();
-
 const jsonParser = bodyParser.json();
 
 // Post to register a new user
 router.post('/', jsonParser, (req, res) => {
   const requiredFields = ['username', 'password'];
   const missingField = requiredFields.find(field => !(field in req.body));
-
   if (missingField) {
     return res.status(422).json({
       code: 422,
@@ -26,7 +23,6 @@ router.post('/', jsonParser, (req, res) => {
   const nonStringField = stringFields.find(
     field => field in req.body && typeof req.body[field] !== 'string'
   );
-
   if (nonStringField) {
     return res.status(422).json({
       code: 422,
@@ -47,7 +43,6 @@ router.post('/', jsonParser, (req, res) => {
   const nonTrimmedField = explicityTrimmedFields.find(
     field => req.body[field].trim() !== req.body[field]
   );
-
   if (nonTrimmedField) {
     return res.status(422).json({
       code: 422,
@@ -56,9 +51,6 @@ router.post('/', jsonParser, (req, res) => {
       location: nonTrimmedField
     });
   }
-
-
-
   const sizedFields = {
     username: {
       min: 1
@@ -80,7 +72,6 @@ router.post('/', jsonParser, (req, res) => {
       'max' in sizedFields[field] &&
             req.body[field].trim().length > sizedFields[field].max
   );
-
   if (tooSmallField || tooLargeField) {
     return res.status(422).json({
       code: 422,
@@ -93,7 +84,6 @@ router.post('/', jsonParser, (req, res) => {
       location: tooSmallField || tooLargeField
     });
   }
-
   let {username, password, firstName = '', lastName = '', role} = req.body;
   // Username and password come in pre-trimmed, otherwise we throw an error
   // before this
@@ -141,14 +131,6 @@ router.post('/', jsonParser, (req, res) => {
       res.status(500).json({code: 500, message: 'Internal server error'});
     });
 });
-
-// router.delete('/:id', jsonParser, (req, res) => {
-//   console.log("delete user from database");
-//   const id = req.params.id;
-//   User.findByIdAndRemove(req.params.id).then(() => {
-//     res.sendStatus(204);
-//   });
-// });
 
 router.get('/', (req, res) => {
   return User.find()

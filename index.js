@@ -17,10 +17,8 @@ const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
 const passport = require('passport');
 const app = express();
 const cors = require('cors');
-
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
-
 const { dbConnect } = require('./db-mongoose');
 const mongoose = require('mongoose');
 
@@ -88,14 +86,5 @@ io.on('connection', (socket) => {
   });
 
 });
-
-
-
-
-
-
-
-
-
 
 module.exports = { app, runServer, closeServer };

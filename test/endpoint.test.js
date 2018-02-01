@@ -1,15 +1,9 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-
 const {app, runServer, closeServer} = require('../index');
-
 const expect = chai.expect;
 const { Classes } = require('../classes/models');
-
 chai.use(chaiHttp);
-
-
-
 
 describe('Classes endpoint tests', function() {
 
