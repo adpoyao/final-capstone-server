@@ -18,6 +18,8 @@ const passport = require('passport');
 const app = express();
 const cors = require('cors');
 
+const io = require('socket.io').listen(PORT);
+
 const { dbConnect } = require('./db-mongoose');
 const mongoose = require('mongoose');
 
@@ -39,7 +41,7 @@ app.use('/api/mood/', moodRouter);
 app.use('/api/alert/', alertRouter);
 app.use('/api/yourStudents/', yourStudentsRouter);
 
-let server
+let server;
 function runServer() {
   return new Promise((resolve, reject) => {
     mongoose.connect(DATABASE_URL, { useMongoClient: true }, err => {
@@ -76,5 +78,23 @@ function closeServer() {
 if (require.main === module) {
   runServer().catch(err => console.error(err));
 }
+
+io.on('connection', (socket) => {
+  console.log('THIS IS YOUR SOCKET ID:', socket.id);
+
+  socket.on('SEND_MESSAGE', function(data){
+    io.emit('RECEIVE_MESSAGE', data);
+  });
+
+});
+
+
+
+
+
+
+
+
+
 
 module.exports = { app, runServer, closeServer };
