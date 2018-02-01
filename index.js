@@ -27,8 +27,6 @@ const io = require('socket.io')(http);
 const { dbConnect } = require('./db-mongoose');
 const mongoose = require('mongoose');
 
-const {socketServer} = require('./socketEvents')
-
 
 app.use(morgan('common'));
 
