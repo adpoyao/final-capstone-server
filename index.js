@@ -6,8 +6,6 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const { PORT, CLIENT_ORIGIN, DATABASE_URL } = require('./config');
 const classRouter = require('./classes/router');
-const conversationsRouter = require('./conversations/router')
-const messageRouter = require('./messages/router')
 const { Class } = require('./classes/models');
 const { Mood } = require('./mood/models');
 const { Alert } = require('./alert/models');
@@ -45,8 +43,7 @@ app.use('/api/auth/', authRouter);
 app.use('/api/mood/', moodRouter);
 app.use('/api/alert/', alertRouter);
 app.use('/api/yourStudents/', yourStudentsRouter);
-app.use('/api/conversations/', conversationsRouter);
-app.use('/api/messages/', messageRouter);
+
 
 
 let server

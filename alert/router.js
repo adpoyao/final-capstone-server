@@ -54,18 +54,17 @@ router.put('/panic/off', jsonParser, (req, res) => {
     })
   //.then(alert => res.json(alert))
 });
+// ${API_BASE_URL}/alert/panic/dismiss/${data.panicID}`
 
 ////TEACHER DISMISSED A PANIC ALERT
 router.put('/panic/dismiss/:panicID', jsonParser, (req, res) => {
-  Alert.findByIdAndUpdate(req.params.panicID, {$pull: {teachers:req.body.teacherID}},
-    function(err){
-      if(err) {
-        console.log(err);
-      }
-      else {
-        res.sendStatus(204);
-      }
-    });
+  Alert.findByIdAndUpdate(req.params.panicID, {$pull: {teachers:req.body.teacherID}}) 
+  .sort({dateTime: -1})
+    .then(data => {
+      console.log('data', data)
+      res.status(200).json(data);
+    })
+    .catch(err => res.status(500).json({message: 'Internal server error'}));
 });
 
 ///REIEVE ALL ACTIVE PANIC ALERTS OF LINKED STUDENTS

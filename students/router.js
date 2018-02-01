@@ -21,7 +21,7 @@ router.get('/:teacherID', (req, res) => {
     .populate('students', { 'username': 0, 'password': 0, '__v': 0, 'role': 0})
     .then(data => {
       result = data
-      console.log('result', result)
+
       for(let i=0; i<result.length; i++){
         for(let j=0; j<result[i].students.length; j++){
           Mood.find({studentID: result[i].students[j]._id}, {'studentID': 0, '__v': 0})
