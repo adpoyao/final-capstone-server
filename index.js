@@ -24,17 +24,11 @@ const cors = require('cors');
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
-app.use(express.static(__dirname + '/public'));
-app.use('/assets', express.static('assets'));
-
-
-
 const { dbConnect } = require('./db-mongoose');
 const mongoose = require('mongoose');
 
 const {socketServer} = require('./socketEvents')
 
-socketServer(io);  
 
 app.use(morgan('common'));
 
@@ -66,9 +60,11 @@ function runServer() {
       if (err) {
         return reject(err);
       }
-      server = http.listen(PORT, function() {
-          console.log('listening on port', PORT);
-      })
+      server = http
+        .listen(PORT, () => {
+          console.log(`Your app is listening on port ${PORT}`);
+          resolve();
+        })
         .on('error', err => {
           mongoose.disconnect();
           reject(err);
