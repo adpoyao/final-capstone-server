@@ -26,7 +26,7 @@ router.get('/', (req, res) => {
 //Retrive classes by teacher last name
 router.get('/search/:lastName',jwtAuth, (req, res) => {
   let userIds = [];
-  User.find({lastName: new RegExp('^'+req.params.lastName+'$', "i"),  role: 'teacher'})
+  User.find({lastName: { "$regex": req.params.lastName, "$options": "i" },  role: 'teacher'})
     .then(users => {
       userIds = users.map(user => user.id);
       return Class.find({teacher: {$in: userIds} }, {'__v': 0})
