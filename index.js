@@ -6,6 +6,8 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const { PORT, CLIENT_ORIGIN, DATABASE_URL } = require('./config');
 const classRouter = require('./classes/router');
+const conversationsRouter = require('./conversations/router')
+const messageRouter = require('./messages/router')
 const { Class } = require('./classes/models');
 const { Mood } = require('./mood/models');
 const { Alert } = require('./alert/models');
@@ -13,16 +15,26 @@ const alertRouter = require('./alert/router');
 const { router: moodRouter } = require('./mood')
 const { router: usersRouter } = require('./users');
 const { router: yourStudentsRouter } = require('./students');
+// const { router: chatRouter } = require('./conversations/router')
 const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
 const passport = require('passport');
 const app = express();
 const cors = require('cors');
 
 const http = require('http').Server(app);
-const io = require('socket.io')(http)
+const io = require('socket.io')(http);
+
+app.use(express.static(__dirname + '/public'));
+app.use('/assets', express.static('assets'));
+
+
 
 const { dbConnect } = require('./db-mongoose');
 const mongoose = require('mongoose');
+
+const {socketServer} = require('./socketEvents')
+
+socketServer(io);  
 
 app.use(morgan('common'));
 
@@ -41,20 +53,22 @@ app.use('/api/auth/', authRouter);
 app.use('/api/mood/', moodRouter);
 app.use('/api/alert/', alertRouter);
 app.use('/api/yourStudents/', yourStudentsRouter);
+app.use('/api/conversations/', conversationsRouter);
+app.use('/api/messages/', messageRouter);
 
-let server;
+
+let server
+
 function runServer() {
   return new Promise((resolve, reject) => {
-    mongoose.connect(DATABASE_URL, { useMongoClient: true }, err => {
+    mongoose.connect(DATABASE_URL, err => {
       console.log(DATABASE_URL);
       if (err) {
         return reject(err);
       }
-      server = app
-        .listen(PORT, () => {
-          console.log(`Your app is listening on port ${PORT}`);
-          resolve();
-        })
+      server = http.listen(PORT, function() {
+          console.log('listening on port', PORT);
+      })
         .on('error', err => {
           mongoose.disconnect();
           reject(err);
@@ -62,6 +76,7 @@ function runServer() {
     });
   });
 }
+
 function closeServer() {
   return mongoose.disconnect().then(() => {
     return new Promise((resolve, reject) => {
@@ -79,23 +94,5 @@ function closeServer() {
 if (require.main === module) {
   runServer().catch(err => console.error(err));
 }
-
-io.on('connection', (socket) => {
-  console.log('THIS IS YOUR SOCKET ID:', socket.id);
-
-  socket.on('SEND_MESSAGE', function(data){
-    io.emit('RECEIVE_MESSAGE', data);
-  });
-
-});
-
-
-
-
-
-
-
-
-
 
 module.exports = { app, runServer, closeServer };
