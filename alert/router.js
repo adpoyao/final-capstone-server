@@ -85,7 +85,7 @@ router.get('/mood/:teacherID', (req, res) => {
       const promises = [];
       for (let i = 0; i < data.length; i++) {
         for (let j = 0; j < data[i].students.length; j++) {
-          promises.push(Mood.find({studentID: data[i].students[j], dateTime: { "$gte": start }}).populate('studentID', { 'username': 0, 'password': 0, '__v': 0 })
+          promises.push(Mood.find({studentID: data[i].students[j], dateTime: { "$gte": start }}).populate('studentID', { 'username': 0, 'password': 0, '__v': 0 }).sort({dateTime:-1})
             .then((mood) => {
               let list = ['enraged', 'livid', 'fuming', 'anxious', 'repulsed', 'disgusted', 'pessimistic', 'alienated', 'despondent', 'despair', 'panicked', 'furious', 'frightened', 'apprehensive', 'troubled', 'glum', 'morose', 'miserable', 'depressed', 'hopeless', 'lonely', 'sullen', 'desolate'] //===>  WE CAN ADJUST THIS LIST BASED ON CRITICAL MOODS
               for (let i = 0; i < mood.length; i++) {
