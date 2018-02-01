@@ -18,7 +18,8 @@ const passport = require('passport');
 const app = express();
 const cors = require('cors');
 
-const io = require('socket.io').listen(PORT);
+const http = require('http').Server(app);
+const io = require('socket.io')(http)
 
 const { dbConnect } = require('./db-mongoose');
 const mongoose = require('mongoose');
