@@ -17,10 +17,8 @@ const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
 const passport = require('passport');
 const app = express();
 const cors = require('cors');
-
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
-
 const { dbConnect } = require('./db-mongoose');
 const mongoose = require('mongoose');
 
@@ -45,7 +43,7 @@ app.use('/api/yourStudents/', yourStudentsRouter);
 let server;
 function runServer() {
   return new Promise((resolve, reject) => {
-    mongoose.connect(DATABASE_URL, { useMongoClient: true }, err => {
+    mongoose.connect(DATABASE_URL, err => {
       console.log(DATABASE_URL);
       if (err) {
         return reject(err);
@@ -88,14 +86,5 @@ io.on('connection', (socket) => {
   });
 
 });
-
-
-
-
-
-
-
-
-
 
 module.exports = { app, runServer, closeServer };
