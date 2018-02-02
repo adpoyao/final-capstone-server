@@ -1,3 +1,4 @@
+'use strict';
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -6,25 +7,26 @@ const { Class } = require('./models');
 const { User } = require('../users/models')
 const router = express.Router();
 const jsonParser = bodyParser.json();
+const passport = require('passport');
+const jwt = require('jsonwebtoken');
+const jwtAuth = passport.authenticate('jwt', {session:false});
 
 
 router.get('/', (req, res) => {
   return Class.find()
-  // .populate('className')
-  .then(data => {
-     res.json(data)
-  })
-  .catch(err => res.status(500).json({ message: 'Internal server error' }));
+      .then(data => {
+        res.json(data)
+      })
+      .catch(err => res.status(500).json({ message: 'Internal server error' }));
 });
 
 // ================>>>>>Working<<<<<===============
 // Retrieves all classes students searched for by teacher name
 
 //Retrive classes by teacher last name
-router.get('/search/:lastName', (req, res) => {
+router.get('/search/:lastName',jwtAuth, (req, res) => {
   let userIds = [];
-
-  User.find({lastName: new RegExp('^'+req.params.lastName+'$', "i"),  role: 'teacher'})
+  User.find({lastName: { "$regex": req.params.lastName, "$options": "i" },  role: 'teacher'})
     .then(users => {
       userIds = users.map(user => user.id);
       return Class.find({teacher: {$in: userIds} }, {'__v': 0})
@@ -34,38 +36,37 @@ router.get('/search/:lastName', (req, res) => {
 });
 
 /////Retrieve classes a student enroll in
-router.get('/student/:id', (req, res) => {
-      return Class.find({students: req.params.id})
-      .populate('students')
-      .populate('teacher', { 'username': 0, 'password': 0, '__v': 0 })
+router.get('/student/:id',jwtAuth, (req, res) => {
+    return Class.find({students: req.params.id})
+        .populate('students')
+        .populate('teacher', { 'username': 0, 'password': 0, '__v': 0 })
         .then(data => res.json(data));
 });
 
 
 //Retrieve all classes a teacher create
-router.get('/teacher/:id', (req, res) => {
-  return Class.find({teacher: req.params.id})
-  .populate('teacher')
-    .then(data => res.json(data));
+router.get('/teacher/:id',jwtAuth, (req, res) => {
+    return Class.find({teacher: req.params.id})
+      .populate('teacher')
+      .then(data => res.json(data));
 
 });
 
 ///////////////////////////////////////////////////////(WORKING)
 //TEACHER CREATE CLASSES
-router.post('/teacher/create', jsonParser, (req, res) => {
-
-  let { id, className, classPeriod, email, phone } = req.body;
+router.post('/teacher/create',jwtAuth, jsonParser, (req, res) => {
+    let { id, className, classPeriod, email, phone } = req.body;
     return Class.create({ teacher: id, className, classPeriod, email, phone })
-    .then(Class => {
-      return res.status(201).json(Class.apiRepr())
-    })
-    .catch(err => res.status(500).json({message: 'Internal server error'}));
+      .then(Class => {
+        return res.status(201).json(Class.apiRepr())
+      })
+      .catch(err => res.status(500).json({message: 'Internal server error'}));
     });
 
 
 ///////////////////////////////////////////////////////////(WORKING)
 //STUDENTS ENROLL IN EXISTING CLASSES
-router.put('/student/enroll/:classID', jsonParser, (req, res) => {
+router.put('/student/enroll/:classID',jwtAuth, jsonParser, (req, res) => {
   return Class.find({_id: req.params.classID})
     .then(Class => {
       if (Class[0].students.includes(req.body.studentID)) {
@@ -98,7 +99,7 @@ router.put('/student/enroll/:classID', jsonParser, (req, res) => {
 });
 
 //TEACHER EDITING EXISTING CLASSE(WORKING)
-router.put('/teacher/edit/:classID', jsonParser, (req, res) => {
+router.put('/teacher/edit/:classID',jwtAuth, jsonParser, (req, res) => {
   Class.findByIdAndUpdate(req.params.classID, {$set: {className:req.body.className}},
     function(err){
       if(err) {
@@ -111,7 +112,7 @@ router.put('/teacher/edit/:classID', jsonParser, (req, res) => {
 });
 
 // Remove from an enrolled class
-router.put('/student/remove/:classID', jsonParser, (req, res) => {
+router.put('/student/remove/:classID',jwtAuth, jsonParser, (req, res) => {
   Class.findByIdAndUpdate(req.params.classID, {$pull: {students:req.body.studentID}},
     function(err){
       if(err) {
@@ -124,12 +125,11 @@ router.put('/student/remove/:classID', jsonParser, (req, res) => {
 });
 
 // Close a class from future enrollment && delete class from any students enrolled(WORKING)
-router.delete('/teacher/close/:classID', (req, res) => {
+router.delete('/teacher/close/:classID',jwtAuth, (req, res) => {
   Class
     .findByIdAndRemove(req.params.classID)
     .then(() => res.status(204).end())
     .catch(err => res.status(500).json({message: 'Internal server error'}));
 });
-
 
 module.exports = router;
