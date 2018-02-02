@@ -10,15 +10,17 @@ const { Class } = require('./classes/models');
 const { Mood } = require('./mood/models');
 const { Alert } = require('./alert/models');
 const alertRouter = require('./alert/router');
-const { router: moodRouter } = require('./mood')
+const { router: moodRouter } = require('./mood');
 const { router: usersRouter } = require('./users');
 const { router: yourStudentsRouter } = require('./students');
 const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
 const passport = require('passport');
 const app = express();
 const cors = require('cors');
+
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
+
 const { dbConnect } = require('./db-mongoose');
 const mongoose = require('mongoose');
 
@@ -78,13 +80,13 @@ if (require.main === module) {
   runServer().catch(err => console.error(err));
 }
 
+// SOCKET IO
 io.on('connection', (socket) => {
-  console.log('THIS IS YOUR SOCKET ID:', socket.id);
+  console.log('SOCKET ID:', socket.id);
 
   socket.on('SEND_MESSAGE', function(data){
     io.emit('RECEIVE_MESSAGE', data);
   });
-
 });
 
 module.exports = { app, runServer, closeServer };
