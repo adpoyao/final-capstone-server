@@ -65,34 +65,52 @@ router.get('/panic/:teacherID',jwtAuth, (req, res) => {
         .then(data => res.json(data));
 });
 
-////Retrieves all critical emotion alerts of linked students
+function filterByID(arr) {
+    let f = [];
+    for (let i = 0; i < arr.length; i ++) {
+    if(f.includes(arr[i].id) === false) {
+        f.push(arr[i].id)
+    }
+}
+    return f;
+}
+
+// ////Retrieves all critical emotion alerts of linked students
 router.get('/mood/:teacherID',jwtAuth, (req, res) => {
     let start = moment().subtract(1440, 'minutes').toDate()
     let arrayMood = [];
+    let ids = [];
     return Class.find({teacher: req.params.teacherID})
     .then((data) => {
-        const promises = [];
         for (let i = 0; i < data.length; i++) {
             for (let j = 0; j < data[i].students.length; j++) {
-            promises.push(Mood.find({studentID: data[i].students[j], dateTime: { "$gte": start }}).populate('studentID', { 'username': 0, 'password': 0, '__v': 0 }).sort({dateTime:-1})
-            .then((mood) => {
-                let list = ['enraged', 'livid', 'fuming', 'anxious', 'repulsed', 'disgusted', 'pessimistic', 'alienated', 'despondent', 'despair', 'panicked', 'furious', 'frightened', 'apprehensive', 'troubled', 'glum', 'morose', 'miserable', 'depressed', 'hopeless', 'lonely', 'sullen', 'desolate'] //===>  WE CAN ADJUST THIS LIST BASED ON CRITICAL MOODS
-                for (let i = 0; i < mood.length; i++) {
-                    if (list.includes(mood[i].moodType)) {
-                        arrayMood.push(mood[i])
-                    }
+                if (!ids.includes(data[i].students[j])) {
+                    ids.push(data[i].students[j])
                 }
-            }))
+            }
         }
-    }
-        return Promise.all(promises).then(() => {
-            res.json(arrayMood);
-      })
-    })
-    .catch(err => res.status(500).json({message: 'Internal server error'}))
+})
+.then(() => {
+    const promises = [];
+    for (let j = 0; j < ids.length; j++) {
+    promises.push(Mood.find({studentID: ids[j], dateTime: { "$gte": start }}).populate('studentID', { 'username': 0, 'password': 0, '__v': 0 }).sort({dateTime:-1})
+    .then((mood) => {
+        let list = ['enraged', 'livid', 'fuming', 'anxious', 'repulsed', 'disgusted', 'pessimistic', 'alienated', 'despondent', 'despair', 'panicked', 'furious', 'frightened', 'apprehensive', 'troubled', 'glum', 'morose', 'miserable', 'depressed', 'hopeless', 'lonely', 'sullen', 'desolate'] //===>  WE CAN ADJUST THIS LIST BASED ON CRITICAL MOODS
+        for (let i = 0; i < mood.length; i++) {
+            if (list.includes(mood[i].moodType)) {
+                arrayMood.push(mood[i])
+            }
+        }
+    }))
+}
+    return Promise.all(promises).then(() => {
+           res.json(arrayMood);
+  })
+})
+.catch(err => res.status(500).json({message: 'Internal server error'}))
 });
 
-///Teacher: Retrieves all critical moods of a student
+// ///Teacher: Retrieves all critical moods of a student
 router.get('/panic/:teacherID/:studentID',jwtAuth, (req, res) => {
   let arrayMood = [];
   return Alert.find({teachers: req.params.teacherID, studentID: req.params.studentID})

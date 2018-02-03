@@ -66,7 +66,7 @@ router.post('/teacher/create',jwtAuth, jsonParser, (req, res) => {
 
 ///////////////////////////////////////////////////////////(WORKING)
 //STUDENTS ENROLL IN EXISTING CLASSES
-router.put('/student/enroll/:classID',jwtAuth, jsonParser, (req, res) => {
+router.put('/student/enroll/:classID', jsonParser,jwtAuth, (req, res) => {
   return Class.find({_id: req.params.classID})
     .then(Class => {
       if (Class[0].students.includes(req.body.studentID)) {
@@ -112,7 +112,7 @@ router.put('/teacher/edit/:classID',jwtAuth, jsonParser, (req, res) => {
 });
 
 // Remove from an enrolled class
-router.put('/student/remove/:classID',jwtAuth, jsonParser, (req, res) => {
+router.put('/student/remove/:classID',jsonParser,jwtAuth,  (req, res) => {
   Class.findByIdAndUpdate(req.params.classID, {$pull: {students:req.body.studentID}},
     function(err){
       if(err) {
